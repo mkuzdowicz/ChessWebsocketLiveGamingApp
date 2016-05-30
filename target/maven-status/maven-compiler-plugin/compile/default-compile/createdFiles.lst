@@ -1,0 +1,3 @@
+com\kuzdowicz\livegaming\ChessLiveGamingAppApplication.class
+com\kuzdowicz\livegaming\config\SpringSecurityConf.class
+com\kuzdowicz\livegaming\controllers\HomeController.class
