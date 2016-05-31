@@ -132,7 +132,7 @@ public class UserPanelController {
 
 		ModelAndView userGamesSite = new ModelAndView("userGames");
 		addBasicObjectsToModelAndView(userGamesSite, principal);
-		List<ChessGame> userChessGames = chessGamesRepository.findAllByWhiteColUsernameOrBlackColUsername(userLogin);
+		List<ChessGame> userChessGames = chessGamesRepository.findAllByWhitePlayerNameOrBlackPlayerName(userLogin);
 
 		UserAccount userInfo = usersRepository.findOneByUsername(userLogin);
 

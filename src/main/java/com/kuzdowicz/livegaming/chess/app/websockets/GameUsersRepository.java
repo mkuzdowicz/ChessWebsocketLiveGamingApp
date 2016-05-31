@@ -4,16 +4,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.kuzdowicz.livegaming.chess.app.models.GameUser;
 import com.kuzdowicz.livegaming.chess.app.protocols.ChessColor;
 import com.kuzdowicz.livegaming.chess.app.protocols.GameUserCommunicationStatus;
 
-@Service
-public class GameUsersHandler {
+@Component
+public class GameUsersRepository {
 
-	private final Logger logger  = Logger.getLogger(GameUsersHandler.class);
+	private final Logger logger  = Logger.getLogger(GameUsersRepository.class);
 	private volatile static long userID = 0;
 
 	protected volatile static Map<String, GameUser> gameUsersMap = new ConcurrentHashMap<>();

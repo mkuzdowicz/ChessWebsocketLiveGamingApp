@@ -59,7 +59,7 @@
 			<li><a href="/home/best-players">best-players</a></li>
 
 			<li class="pull-right logOutBtn ">
-				<form class="form-inline" action="/TutorialsManager/logout"
+				<form class="form-inline" action="/logout"
 					method="post">
 					<input type="hidden" name="${_csrf.parameterName}"
 						value="${_csrf.token}" />

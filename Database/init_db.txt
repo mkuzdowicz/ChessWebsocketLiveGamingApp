@@ -1,29 +1,14 @@
 initialization of db in mongo on local computer
 
-the appclication is configured for connection
-with mongolab mongodb
-
-You can configure a local db conncetion in this steps:
-1. go to MongoDBConnectionConfig.java
-2. change the linie:
-
-private String mongoLabConnectionString = ChessAppProperties
-			.getProperty("db.conn.production");
-			
-into:
-
-private String mongoLabConnectionString = ChessAppProperties
-			.getProperty("db.conn.localhost");
-
 3. Create local database on local mongodb server with below commands in mongo shell
 
 
 use chessapp_db
 
-db.users.insert({username : "admin", password : "$2a$10$RDuIMXLNFqiCLBK43WCTzOki6JHoAmSL0PkByAGoRvww6GwAtDrh2", role : 1, "userId": 0, "isRegistrationConfirmed": true});
+db.users.insert({username : "admin", password : "$2a$10$RDuIMXLNFqiCLBK43WCTzOki6JHoAmSL0PkByAGoRvww6GwAtDrh2", role : 1, "isRegistrationConfirmed": true});
 db.users.find().pretty();
 
-Your administrator account wil be created
+Your administrator account will be created
 
 Login: admin
 password: Abcde1234%

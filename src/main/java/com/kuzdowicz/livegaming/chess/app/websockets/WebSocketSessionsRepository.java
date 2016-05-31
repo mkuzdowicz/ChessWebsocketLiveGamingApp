@@ -7,23 +7,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-@Service
-public class WebSocketSessionHandler {
+@Component
+public class WebSocketSessionsRepository {
 
-	private final Logger logger;
-
+	private final Logger logger = Logger.getLogger(WebSocketSessionsRepository.class);
 	private volatile static Map<String, Session> sessionsMap = new ConcurrentHashMap<>();
 
+	@Autowired
 	private Gson gson;
-
-	public WebSocketSessionHandler() {
-		gson = new Gson();
-		logger = Logger.getLogger(WebSocketSessionHandler.class);
-	}
 
 	public synchronized void addSession(String username, Session session) {
 		sessionsMap.put(username, session);
@@ -47,8 +43,7 @@ public class WebSocketSessionHandler {
 
 	public synchronized void sendToAllConnectedSessionsActualParticipantList() {
 
-		String jsonUsersList = gson.toJson(GameUsersHandler.gameUsersMap
-				.values());
+		String jsonUsersList = gson.toJson(GameUsersRepository.gameUsersMap.values());
 		for (String username : sessionsMap.keySet()) {
 			Session userSession = sessionsMap.get(username);
 			try {
@@ -59,8 +54,7 @@ public class WebSocketSessionHandler {
 		}
 	}
 
-	public void sendToSession(String toUsernameName, String fromUsername,
-			String message) {
+	public void sendToSession(String toUsernameName, String fromUsername, String message) {
 		logger.info("sendToSession()");
 
 		Session userSession = sessionsMap.get(toUsernameName);
@@ -77,8 +71,7 @@ public class WebSocketSessionHandler {
 	public void printOutAllSessionsOnOpen(Session addedSession) {
 
 		logger.info("dodano sesje: " + addedSession.getId());
-		logger.info("sessionOwner: "
-				+ addedSession.getUserProperties().get("sessionOwner"));
+		logger.info("sessionOwner: " + addedSession.getUserProperties().get("sessionOwner"));
 
 		logger.info("obecne sesje: ");
 		for (String username : sessionsMap.keySet()) {
@@ -90,8 +83,7 @@ public class WebSocketSessionHandler {
 
 	public Boolean userHaveSessionAndIsConnected(String username) {
 		Session userSession = sessionsMap.get(username);
-		Map<String, Object> userPropertiesInSession = userSession
-				.getUserProperties();
+		Map<String, Object> userPropertiesInSession = userSession.getUserProperties();
 		if (userPropertiesInSession.containsValue(username)) {
 			return true;
 		}
@@ -100,8 +92,7 @@ public class WebSocketSessionHandler {
 
 	public void printOutAllSessionsOnClose(Session removedSession) {
 		logger.info("usunieto sesje: " + removedSession.getId());
-		logger.info("sessionOwner: "
-				+ removedSession.getUserProperties().get("sessionOwner"));
+		logger.info("sessionOwner: " + removedSession.getUserProperties().get("sessionOwner"));
 
 		logger.info("pozostałe sesje: ");
 		for (String username : sessionsMap.keySet()) {
