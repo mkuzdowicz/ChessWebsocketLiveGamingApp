@@ -6,12 +6,11 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
-public class UserAccount extends ChessAppUser implements
-		Comparable<UserAccount> {
+public class UserAccount {
 
 	@Id
 	private String id;
-	private long userId;
+	private String username;
 	private String password;
 	private String name;
 	private String lastname;
@@ -25,7 +24,6 @@ public class UserAccount extends ChessAppUser implements
 	private Long numberOfLostChessGames;
 
 	public UserAccount() {
-
 	}
 
 	public UserAccount(String username, String password, int role, String email) {
@@ -91,14 +89,6 @@ public class UserAccount extends ChessAppUser implements
 		this.lastname = lastname;
 	}
 
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-
 	public Long getNumberOfGamesPlayed() {
 		return numberOfGamesPlayed;
 	}
@@ -139,27 +129,12 @@ public class UserAccount extends ChessAppUser implements
 		this.numberOfLostChessGames = numberOfLostChessGames;
 	}
 
-	@Override
-	public int compareTo(UserAccount userAcc) {
-
-		long compareUserId = userAcc.getUserId();
-
-		return (int) (this.userId - compareUserId);
-
+	public String getUsername() {
+		return username;
 	}
 
-	@Override
-	public String toString() {
-		return "UserAccount [username= " + username + ", id=" + id
-				+ ", userId=" + userId + ", password=" + password + ", name="
-				+ name + ", lastname=" + lastname + ", role=" + role
-				+ ", email=" + email + ", registrationHashString="
-				+ registrationHashString + ", isRegistrationConfirmed="
-				+ isRegistrationConfirmed + ", registrationDate="
-				+ registrationDate + ", numberOfGamesPlayed="
-				+ numberOfGamesPlayed + ", numberOfWonChessGames="
-				+ numberOfWonChessGames + ", numberOfLostChessGames="
-				+ numberOfLostChessGames + "]";
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

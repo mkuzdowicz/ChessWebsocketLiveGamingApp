@@ -1,10 +1,8 @@
 package com.kuzdowicz.livegaming.chess.app.models;
 
-import org.springframework.stereotype.Component;
+public class GameUser {
 
-@Component
-public class GameUser extends ChessAppUser {
-
+	private String username;
 	private long userIdInGameContext;
 	private String playNowWithUser;
 	private long numberOfScores;
@@ -67,13 +65,12 @@ public class GameUser extends ChessAppUser {
 		this.communicationStatus = communicationStatus;
 	}
 
-	@Override
-	public String toString() {
-		return "GameUser [username=" + username + ",  userIdInGameContext="
-				+ userIdInGameContext + ", playNowWithUser=" + playNowWithUser
-				+ ", numberOfScores=" + numberOfScores + ", chessColor="
-				+ chessColor + ", communicationStatus=" + communicationStatus
-				+ ", uniqueActualGameHash=" + uniqueActualGameHash + "]";
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }
