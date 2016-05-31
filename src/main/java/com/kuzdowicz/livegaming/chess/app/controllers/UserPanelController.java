@@ -1,6 +1,8 @@
 package com.kuzdowicz.livegaming.chess.app.controllers;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -36,17 +38,14 @@ public class UserPanelController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	private static final Logger logger = Logger
-			.getLogger(UserPanelController.class);
+	private static final Logger logger = Logger.getLogger(UserPanelController.class);
 
 	@RequestMapping("/user/your-account")
-	public ModelAndView getLoggedInUserDetails(String errorrMessage,
-			String successMessage) {
+	public ModelAndView getLoggedInUserDetails(String errorrMessage, String successMessage, Principal principal) {
 
 		logger.debug("getLoggedInUserDetails()");
 
-		Authentication auth = SecurityContextHolder.getContext()
-				.getAuthentication();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String currentUserLogin = auth.getName();
 
 		UserAccount user = usersRepository.findOneByUsername(currentUserLogin);
@@ -57,33 +56,29 @@ public class UserPanelController {
 		yourAccount.addObject("user", user);
 		yourAccount.addObject("errorrMessage", errorrMessage);
 		yourAccount.addObject("successMessage", successMessage);
-		addBasicObjectsToModelAndView(yourAccount);
+		addBasicObjectsToModelAndView(yourAccount, principal);
 
 		return yourAccount;
 	}
 
 	@RequestMapping(value = "/user/your-account", method = RequestMethod.POST)
-	public ModelAndView sendEditUserDataForUserAccount(
-			@Valid @ModelAttribute("editForm") EditForm editForm,
-			BindingResult result) {
+	public ModelAndView sendEditUserDataForUserAccount(@Valid @ModelAttribute("editForm") EditForm editForm,
+			BindingResult result, Principal principal) {
 		logger.debug("sendEditUserDataForUserAccount()");
 
 		Boolean changePasswordFlag = editForm.getChangePasswordFlag();
 		Boolean changePasswordCheckBoxIsUnchecked = !changePasswordFlag;
 		if (changePasswordCheckBoxIsUnchecked) {
-			if (result.hasFieldErrors("email") || result.hasFieldErrors("name")
-					|| result.hasFieldErrors("lastname")) {
+			if (result.hasFieldErrors("email") || result.hasFieldErrors("name") || result.hasFieldErrors("lastname")) {
 				ModelAndView editFormSite = new ModelAndView("yourAccount");
-				editFormSite.addObject("changePasswordCheckBoxIsChecked",
-						changePasswordFlag);
+				editFormSite.addObject("changePasswordCheckBoxIsChecked", changePasswordFlag);
 				editFormSite.addObject("editForm", editForm);
 				return editFormSite;
 			}
 		} else {
 			if (result.hasErrors()) {
 				ModelAndView editFormSite = new ModelAndView("yourAccount");
-				editFormSite.addObject("changePasswordCheckBoxIsChecked",
-						changePasswordFlag);
+				editFormSite.addObject("changePasswordCheckBoxIsChecked", changePasswordFlag);
 				editFormSite.addObject("editForm", editForm);
 				return editFormSite;
 			}
@@ -99,8 +94,7 @@ public class UserPanelController {
 
 		if (changePasswordFlag && !password.equals(confirmPassword)) {
 
-			return getLoggedInUserDetails(
-					Messages.getProperty("error.passwords.notequal"), null);
+			return getLoggedInUserDetails(Messages.getProperty("error.passwords.notequal"), null, principal);
 		}
 
 		UserAccount user = usersRepository.findOneByUsername(userLogin);
@@ -114,8 +108,7 @@ public class UserPanelController {
 
 		if (changePasswordFlag) {
 			try {
-				String hashedPassword = passwordEncoder.encode(
-						password);
+				String hashedPassword = passwordEncoder.encode(password);
 				user.setPassword(hashedPassword);
 			} catch (Exception e) {
 				logger.debug(e);
@@ -124,22 +117,19 @@ public class UserPanelController {
 		user.setEmail(email);
 		usersRepository.save(user);
 
-		return getLoggedInUserDetails(null,
-				Messages.getProperty("success.user.edit"));
+		return getLoggedInUserDetails(null, Messages.getProperty("success.user.edit"), principal);
 	}
 
 	@RequestMapping(value = "/user/your-chessgames", method = RequestMethod.GET)
-	public ModelAndView userGamesSite() {
+	public ModelAndView userGamesSite(Principal principal) {
 		logger.debug("userGamesSite()");
 
-		Authentication auth = SecurityContextHolder.getContext()
-				.getAuthentication();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userLogin = auth.getName();
 
 		ModelAndView userGamesSite = new ModelAndView("userGames");
-		addBasicObjectsToModelAndView(userGamesSite);
-		List<ChessGame> userChessGames = chessGamesRepository
-				.findAllByWhiteColUsernameOrBlackColUsername(userLogin);
+		addBasicObjectsToModelAndView(userGamesSite, principal);
+		List<ChessGame> userChessGames = chessGamesRepository.findAllByWhiteColUsernameOrBlackColUsername(userLogin);
 
 		UserAccount userInfo = usersRepository.findOneByUsername(userLogin);
 
@@ -149,14 +139,9 @@ public class UserPanelController {
 		return userGamesSite;
 	}
 
-	private void addBasicObjectsToModelAndView(ModelAndView modelAndView) {
-
-		Authentication auth = SecurityContextHolder.getContext()
-				.getAuthentication();
-
-		String userLogin = auth.getName();
-		modelAndView.addObject("currentUserName", userLogin);
-
+	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
+		mav.addObject("currentUserName",
+				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
 	}
 
 }

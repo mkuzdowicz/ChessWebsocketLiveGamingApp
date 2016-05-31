@@ -8,28 +8,28 @@
 	prefix="security"%>
 
 <ul id="navButtons" class="nav nav-tabs navView">
-	<li><a href="<%=contextURL%>/">home</a></li>
-	<li><a href="<%=contextURL%>/play-chess-with-computer">play-with-computer</a></li>
-	<li><a href="<%=contextURL%>/play-chess-with-user">play-with-others</a></li>
+	<li><a href="/">home</a></li>
+	<li><a href="/play-chess-with-computer">play-with-computer</a></li>
+	<li><a href="/play-chess-with-user">play-with-others</a></li>
 
 	<security:authorize access="hasRole('ROLE_ADMIN')">
-		<li><a href="<%=contextURL%>/admin/users">all-users</a></li>
+		<li><a href="/admin/users">all-users</a></li>
 	</security:authorize>
 
 	<security:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin" />
 
 	<security:authorize access="hasRole('ROLE_USER')">
-		<li><a href="<%=contextURL%>/user/your-account">your-profile</a></li>
+		<li><a href="/user/your-account">your-profile</a></li>
 	</security:authorize>
 
 	<security:authorize access="hasRole('ROLE_USER')">
-		<li><a href="<%=contextURL%>/user/your-chessgames">your-games-history</a></li>
+		<li><a href="/user/your-chessgames">your-games-history</a></li>
 	</security:authorize>
-	<li><a href="<%=contextURL%>/home/best-players">best-players</a></li>
+	<li><a href="/home/best-players">best-players</a></li>
 
-	<li class="pull-right logOutBtn "><a href="<%=contextURL%>/logout">log
+	<li class="pull-right logOutBtn "><a href="/logout">log
 			out</a></li>
-	<li class="pull-right logInBtn "><a href="<%=contextURL%>/login">log
+	<li class="pull-right logInBtn "><a href="/login">log
 			in</a></li>
 </ul>
 <div class="welcome-user-line">

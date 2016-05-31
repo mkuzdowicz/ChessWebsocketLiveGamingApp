@@ -6,7 +6,7 @@
 <%@ page import="com.kuzdowicz.livegaming.chess.app.models.UserAccount"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <script type="text/javascript"
-	src="<c:url value="${pageContext.request.contextPath}/resources/js/lib/chess.js" />"></script>
+	src="<c:url value="${pageContext.request.contextPath}/js/lib/chess.js" />"></script>
 
 <div class="container-fluid">
 	<jsp:include page="includes/menu.jsp" />
@@ -20,7 +20,7 @@
 					</div>
 					<div id="home-img-div">
 						<img id="home-img" alt="iboard home image"
-							src="<c:url value="${pageContext.request.contextPath}/resources/images/konik5.jpg" />" />
+							src="<c:url value="${pageContext.request.contextPath}/images/konik5.jpg" />" />
 					</div>
 
 					<div id="chess-board-home">
@@ -41,7 +41,7 @@
 </div>
 <!-- IMPORT CHESS SCRIPT -->
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/resources/js/chessComputerVsComputer.js"></script>
+	src="${pageContext.request.contextPath}/js/chessComputerVsComputer.js"></script>
 
 <jsp:include page="includes/footer.jsp" />
 

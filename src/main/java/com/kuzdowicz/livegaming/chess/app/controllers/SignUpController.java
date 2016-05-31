@@ -1,13 +1,13 @@
 package com.kuzdowicz.livegaming.chess.app.controllers;
 
+import java.security.Principal;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -37,21 +37,21 @@ public class SignUpController {
 
 	// sign in
 	@RequestMapping("/signup")
-	public ModelAndView getSignUpForm(SignUpForm signUpFomr, String msg) {
+	public ModelAndView getSignUpForm(SignUpForm signUpFomr, String msg, Principal principa) {
 
 		ModelAndView signUpSite = new ModelAndView("signup");
 		if (msg != null) {
 			signUpSite.addObject("errorMessage", msg);
 		}
 		signUpSite.addObject("signUpFomr", signUpFomr);
-		addBasicObjectsToModelAndView(signUpSite);
+		addBasicObjectsToModelAndView(signUpSite, principa);
 
 		return signUpSite;
 	}
 
 	@RequestMapping("/signup/account/creation")
 	public ModelAndView getSiteAccountCreationInfo(String userCreationMsg, boolean created, String userMail,
-			String userPassword) {
+			String userPassword, Principal principa) {
 
 		ModelAndView accountCreationInfo = new ModelAndView("creatAccountMessage");
 		accountCreationInfo.addObject("msg", userCreationMsg);
@@ -59,15 +59,15 @@ public class SignUpController {
 		if (created) {
 			accountCreationInfo.addObject("userMail", userMail);
 		}
-		addBasicObjectsToModelAndView(accountCreationInfo);
+		addBasicObjectsToModelAndView(accountCreationInfo, principa);
 
 		return accountCreationInfo;
 
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpFomr") SignUpForm signUpFomr,
-			BindingResult result) {
+	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpFomr") SignUpForm signUpFomr, BindingResult result,
+			Principal principa) {
 
 		if (result.hasErrors()) {
 
@@ -84,7 +84,7 @@ public class SignUpController {
 		// validation
 		if (!userPassword.equals(confirmPassword)) {
 
-			return getSignUpForm(signUpFomr, Messages.getProperty("error.passwords.notequal"));
+			return getSignUpForm(signUpFomr, Messages.getProperty("error.passwords.notequal"), principa);
 		}
 
 		String hashPassword = passwordEncoder.encode(userPassword);
@@ -105,22 +105,20 @@ public class SignUpController {
 
 		if (creationMessage == null) {
 
-			return getSignUpForm(signUpFomr, Messages.getProperty("error.login.exists"));
+			return getSignUpForm(signUpFomr, Messages.getProperty("error.login.exists"), principa);
 
 		}
 
 		mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
 
-		return getSiteAccountCreationInfo(Messages.getProperty("success.user.created"), true, userEmail, userPassword);
+		return getSiteAccountCreationInfo(Messages.getProperty("success.user.created"), true, userEmail, userPassword,
+				principa);
 
 	}
 
-	private void addBasicObjectsToModelAndView(ModelAndView modelAndView) {
-
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		String userLogin = auth.getName();
-		modelAndView.addObject("currentUserName", userLogin);
+	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
+		mav.addObject("currentUserName",
+				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
 
 	}
 

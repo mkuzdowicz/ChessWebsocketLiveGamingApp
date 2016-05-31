@@ -1,15 +1,15 @@
 package com.kuzdowicz.livegaming.chess.app.controllers;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -40,21 +40,21 @@ public class AdminPanelController {
 	}
 
 	@RequestMapping(value = "admin/users", method = RequestMethod.GET)
-	public ModelAndView getAllUsers() {
+	public ModelAndView getAllUsers(Principal principal) {
 
 		logger.info("getAllUsers()");
 		List<UserAccount> users = usersRepository.findAll();
 
 		ModelAndView usersPage = new ModelAndView("users");
 		usersPage.addObject("users", users);
-		addBasicObjectsToModelAndView(usersPage);
+		addBasicObjectsToModelAndView(usersPage, principal);
 
 		return usersPage;
 	}
 
 	@RequestMapping(value = "admin/users/editUser", method = RequestMethod.GET)
 	public ModelAndView showEditUserForm(@RequestParam("login") String login, String errorMessage,
-			String successMessage) {
+			String successMessage, Principal principal) {
 
 		logger.info("showEditUserForm()");
 		UserAccount user = usersRepository.findOneByUsername(login);
@@ -65,13 +65,14 @@ public class AdminPanelController {
 		userDetailPage.addObject("user", user);
 		userDetailPage.addObject("errorMessage", errorMessage);
 		userDetailPage.addObject("successMessage", successMessage);
-		addBasicObjectsToModelAndView(userDetailPage);
+		addBasicObjectsToModelAndView(userDetailPage, principal);
 
 		return userDetailPage;
 	}
 
 	@RequestMapping(value = "admin/users/editUser", method = RequestMethod.POST)
-	public ModelAndView sendEditUserData(@Valid @ModelAttribute("editForm") EditForm editForm, BindingResult result) {
+	public ModelAndView sendEditUserData(@Valid @ModelAttribute("editForm") EditForm editForm, BindingResult result,
+			Principal principal) {
 
 		logger.info("sendEditUserData()");
 
@@ -103,7 +104,7 @@ public class AdminPanelController {
 
 		if (changePasswordFlag && !password.equals(confirmPassword)) {
 
-			return showEditUserForm(userLogin, Messages.getProperty("error.passwords.notequal"), null);
+			return showEditUserForm(userLogin, Messages.getProperty("error.passwords.notequal"), null, principal);
 		}
 
 		UserAccount user = usersRepository.findOneByUsername(userLogin);
@@ -138,26 +139,26 @@ public class AdminPanelController {
 			user.setEmail(email);
 			usersRepository.save(user);
 
-			return showEditUserForm(user.getUsername(), null, Messages.getProperty("success.user.edit"));
+			return showEditUserForm(user.getUsername(), null, Messages.getProperty("success.user.edit"), principal);
 
 		} else {
 
-			return showEditUserForm(null, Messages.getProperty("error.fatal.error"), null);
+			return showEditUserForm(null, Messages.getProperty("error.fatal.error"), null, principal);
 		}
 	}
 
 	@RequestMapping(value = "admin/users/remove", method = RequestMethod.POST)
-	public ModelAndView removeUser(@RequestParam("username") String username) {
+	public ModelAndView removeUser(@RequestParam("username") String username, Principal principal) {
 		logger.info("removeUser()");
 
 		UserAccount user = usersRepository.findOneByUsername(username);
 		usersRepository.delete(user);
 
-		return getAllUsers();
+		return getAllUsers(principal);
 	}
 
 	@RequestMapping(value = "/admin/users/addUser", method = RequestMethod.GET)
-	public ModelAndView getAddUserForm(String errorMsg, String successMsg) {
+	public ModelAndView getAddUserForm(String errorMsg, String successMsg, Principal principal) {
 		logger.info("getAddUserForm()");
 
 		ModelAndView addUserPage = new ModelAndView("addUser");
@@ -165,13 +166,14 @@ public class AdminPanelController {
 		addUserPage.addObject("successMsg", successMsg);
 		SignUpForm signUpForm = new SignUpForm();
 		addUserPage.addObject("signUpForm", signUpForm);
-		addBasicObjectsToModelAndView(addUserPage);
+		addBasicObjectsToModelAndView(addUserPage, principal);
 
 		return addUserPage;
 	}
 
 	@RequestMapping(value = "admin/users/addUser", method = RequestMethod.POST)
-	public ModelAndView addUser(@Valid @ModelAttribute("signUpForm") SignUpForm signUpForm, BindingResult result) {
+	public ModelAndView addUser(@Valid @ModelAttribute("signUpForm") SignUpForm signUpForm, BindingResult result,
+			Principal principal) {
 		logger.debug("addUser()");
 
 		if (result.hasErrors()) {
@@ -189,7 +191,7 @@ public class AdminPanelController {
 		// validation
 		if (!plaintextPassword.equals(confirmPassword)) {
 
-			return getAddUserForm(Messages.getProperty("error.passwords.notequal"), null);
+			return getAddUserForm(Messages.getProperty("error.passwords.notequal"), null, principal);
 		}
 
 		UserAccount user = new UserAccount();
@@ -215,19 +217,16 @@ public class AdminPanelController {
 		UserAccount updateResult = usersRepository.insert(user);
 
 		if (updateResult != null) {
-			return getAddUserForm(null, Messages.getProperty("success.user.created"));
+			return getAddUserForm(null, Messages.getProperty("success.user.created"), principal);
 		} else {
-			return getAddUserForm("login " + userLogin + " allready exists!", null);
+			return getAddUserForm("login " + userLogin + " allready exists!", null, principal);
 		}
 
 	}
 
-	private void addBasicObjectsToModelAndView(ModelAndView modelAndView) {
-
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		String userLogin = auth.getName();
-		modelAndView.addObject("currentUserName", userLogin);
+	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
+		mav.addObject("currentUserName",
+				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
 
 	}
 

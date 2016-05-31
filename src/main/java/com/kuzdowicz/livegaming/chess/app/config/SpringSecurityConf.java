@@ -12,17 +12,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConf extends WebSecurityConfigurerAdapter {
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
-	
+
 	@Override
 	public void configure(WebSecurity webSecurity) throws Exception {
 
-		webSecurity.ignoring().antMatchers("/resources/**");
+		webSecurity.ignoring().antMatchers("/**");
 	}
 
 	@Override

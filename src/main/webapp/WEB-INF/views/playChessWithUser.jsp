@@ -7,6 +7,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib uri="http://www.springframework.org/security/tags"
 	prefix="security"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <div class="container-fluid">
 	<jsp:include page="includes/menu.jsp" />
@@ -17,7 +18,7 @@
 		<security:authorize access="hasRole('ROLE_USER')" var="isLoggedIn" />
 		<security:authorize access="hasRole('ROLE_USER')">
 			<script
-				src="<c:url value="${pageContext.request.contextPath}/resources/js/lib/chess.js" />"></script>
+				src="<c:url value="${pageContext.request.contextPath}/js/lib/chess.js" />"></script>
 			<div class="outerDiv-play-with-users">
 
 				<div class="wrapperForKeepCenterPosition">
@@ -82,7 +83,9 @@
 			<div class="alert-log-in-to-play">
 				<div class="alert alert-warning text-center"
 					id="play-chess-not-loggedin-alert" role="alert">
-					<h3>${warning}</h3>
+					<h3>
+						<spring:message code="warning.play.with.others"></spring:message>
+					</h3>
 				</div>
 				<div id="play-chess-not-loggedin-btns" class="pull-right">
 					<a class="btn btn-info" href="/login">log in</a> <a
@@ -90,9 +93,6 @@
 				</div>
 			</div>
 		</c:if>
-
-
-
 	</div>
 </div>
 
@@ -114,29 +114,29 @@
 
 	<!-- Main -->
 	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/resources/js/playChessWithUserMain.js"></script>
+		src="${pageContext.request.contextPath}/js/playChessWithUserMain.js"></script>
 
 	<!-- IMPORT WEBSOCKET CLIENT ENDPOINT SCRIPT -->
 	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/resources/js/websocketClientEndpoint.js">
+		src="${pageContext.request.contextPath}/js/websocketClientEndpoint.js">
 		
 	</script>
 
 	<!-- IMPORT WEBSOCKET CLIENT MESSAGE PROTOCOL -->
 	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/resources/js/wsClientMessageExchangeProtocol.js">
+		src="${pageContext.request.contextPath}/js/wsClientMessageExchangeProtocol.js">
 		
 	</script>
 
 	<!-- IMPORT WEBSOCKET CLIENT ENDPOINT FUNCTIONS -->
 	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/resources/js/wsClientEndpointFunctions.js">
+		src="${pageContext.request.contextPath}/js/wsClientEndpointFunctions.js">
 		
 	</script>
 
 	<!-- IMPORT CHESS LOGIC SCRIPT -->
 	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/resources/js/chessUserVsUser.js">
+		src="${pageContext.request.contextPath}/js/chessUserVsUser.js">
 		
 	</script>
 </security:authorize>

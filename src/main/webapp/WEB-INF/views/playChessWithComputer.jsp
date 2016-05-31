@@ -24,7 +24,7 @@
 					</small>
 				</div>
 				<script type="text/javascript"
-					src="<c:url value="${pageContext.request.contextPath}/resources/js/lib/chess.js" />"></script>
+					src="<c:url value="${pageContext.request.contextPath}/js/lib/chess.js" />"></script>
 				<div id="chess-board-play-with-computer">
 					<div id="board"></div>
 					<br />
@@ -37,7 +37,7 @@
 </div>
 <!-- IMPORT CHESS SCRIPT -->
 <script type="text/javascript"
-	src="${pageContext.request.contextPath}/resources/js/chessUserVsComputer.js">
+	src="${pageContext.request.contextPath}/js/chessUserVsComputer.js">
 	
 </script>
 <jsp:include page="includes/footer.jsp" />

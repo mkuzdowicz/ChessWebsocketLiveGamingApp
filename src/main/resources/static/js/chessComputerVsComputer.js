@@ -9,7 +9,7 @@
 var board, game = new Chess();
 
 var cfg = {
-	pieceTheme : '/resources/images/chesspieces/wikipedia/{piece}.png',
+	pieceTheme : '/images/chesspieces/wikipedia/{piece}.png',
 	position : 'start'
 };
 

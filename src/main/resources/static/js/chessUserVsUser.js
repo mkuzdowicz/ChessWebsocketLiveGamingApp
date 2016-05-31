@@ -162,7 +162,7 @@ var updateStatus = function() {
 };
 
 var cfg = {
-	pieceTheme : '/resources/images/chesspieces/wikipedia/{piece}.png',
+	pieceTheme : '/images/chesspieces/wikipedia/{piece}.png',
 	draggable : true,
 	position : 'start',
 	onDragStart : onDragStart,

@@ -1,11 +1,11 @@
 package com.kuzdowicz.livegaming.chess.app.controllers;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,29 +21,28 @@ public class HomeController {
 	private static final Logger logger = Logger.getLogger(HomeController.class);
 
 	private UsersRepository repository;
-	
-	
+
 	@Autowired
 	public HomeController(UsersRepository repository) {
 		this.repository = repository;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView home() {
+	public ModelAndView home(Principal principal) {
 		logger.info("homePage()");
 
 		ModelAndView homePageModel = new ModelAndView("home");
-		addBasicObjectsToModelAndView(homePageModel);
+		addBasicObjectsToModelAndView(homePageModel, principal);
 
 		return homePageModel;
 	}
 
 	@RequestMapping(value = "/home/best-players", method = RequestMethod.GET)
-	public ModelAndView bestPlayersSite() {
+	public ModelAndView bestPlayersSite(Principal principal) {
 		logger.info("bestPlayersSite()");
 
 		ModelAndView bestPlayers = new ModelAndView("bestPlayers");
-		addBasicObjectsToModelAndView(bestPlayers);
+		addBasicObjectsToModelAndView(bestPlayers, principal);
 		List<UserAccount> bestPlayingUsers = repository.findAll();
 		Gson gson = new Gson();
 		bestPlayers.addObject("bestPlayersJson", gson.toJson(bestPlayingUsers));
@@ -51,14 +50,9 @@ public class HomeController {
 		return bestPlayers;
 	}
 
-	private void addBasicObjectsToModelAndView(ModelAndView modelAndView) {
-
-		Authentication auth = SecurityContextHolder.getContext()
-				.getAuthentication();
-
-		String userLogin = auth.getName();
-		modelAndView.addObject("currentUserName", userLogin);
-
+	private void addBasicObjectsToModelAndView(ModelAndView modelAndView, Principal principal) {
+		modelAndView.addObject("currentUserName",
+				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
 	}
 
 }

@@ -1,8 +1,9 @@
 package com.kuzdowicz.livegaming.chess.app.controllers;
 
+import java.security.Principal;
+import java.util.Optional;
+
 import org.apache.log4j.Logger;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,10 +18,11 @@ public class LoginController {
 	private static final Logger logger = Logger.getLogger(LoginController.class);
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public ModelAndView getLoginPage() {
+	public ModelAndView getLoginPage(LoginForm loginForm, Principal principal) {
 		logger.debug("getLoginPage()");
 		ModelAndView loginPageModel = new ModelAndView("login");
-		addBasicObjectsToModelAndView(loginPageModel);
+		loginPageModel.addObject("loginForm", loginForm);
+		addBasicObjectsToModelAndView(loginPageModel, principal);
 
 		return loginPageModel;
 	}
@@ -36,14 +38,9 @@ public class LoginController {
 
 	}
 
-	private void addBasicObjectsToModelAndView(ModelAndView modelAndView) {
-
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		String userLogin = auth.getName();
-		modelAndView.addObject("currentUserName", userLogin);
-		LoginForm loginForm = new LoginForm();
-		modelAndView.addObject("loginForm", loginForm);
+	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
+		mav.addObject("currentUserName",
+				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
 
 	}
 

@@ -14,9 +14,9 @@
 					.getProperty("app.contextpath");
 		%>
 		<script
-			src="<c:url value="${pageContext.request.contextPath}/resources/js/main.js" />"></script>
+			src="<c:url value="${pageContext.request.contextPath}/js/main.js" />"></script>
 		<script
-			src="<c:url value="${pageContext.request.contextPath}/resources/js/lib/jquery.canvasjs.min.js" />"></script>
+			src="<c:url value="${pageContext.request.contextPath}/js/lib/jquery.canvasjs.min.js" />"></script>
 		<br />
 		<div class="site-title">
 			<h1 class="text-center nice-green-backgroud">
@@ -31,7 +31,7 @@
 			var USERS_JSON_ARR = JSON.parse('${usersJson}');
 		</script>
 		<script
-			src="<c:url value="${pageContext.request.contextPath}/resources/js/bestPlayersMain.js" />"></script>
+			src="<c:url value="${pageContext.request.contextPath}/js/bestPlayersMain.js" />"></script>
 
 	</div>
 </div>

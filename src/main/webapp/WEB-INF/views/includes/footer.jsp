@@ -2,17 +2,17 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="com.kuzdowicz.livegaming.chess.app.props.*"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%
-	String version = ChessAppProperties.getProperty("chessApp.version");
-	String appMail = ChessAppProperties.getProperty("mail.username");
-%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <br />
 <footer class="footer">
-	<span class="author">author: Marcin Kużdowicz</span> <span
-		class="appTitle"><%=appMail%></span> <span class="pull-right">version:
-		<%=version%></span>
+	<div class="text-center">
+		author:&nbsp;
+		<spring:message code="author" />
+		&nbsp;&nbsp;&nbsp;&nbsp; version:&nbsp;
+		<spring:message code="version" />
+
+	</div>
 </footer>
-<script type="text/javascript"
-	src="<c:url value="${pageContext.request.contextPath}/static/resources/js/main.js" />"></script>
+<script type="text/javascript" src="<c:url value="/js/main.js" />"></script>
 </body>
 </html>

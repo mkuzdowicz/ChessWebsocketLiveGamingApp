@@ -13,7 +13,7 @@
 					.getProperty("app.contextpath");
 		%>
 		<script
-			src="<c:url value="${pageContext.request.contextPath}/resources/js/userGamesHistory.js" />"></script>
+			src="<c:url value="${pageContext.request.contextPath}/js/userGamesHistory.js" />"></script>
 
 		<div id="user-games-stats" class="text-center nice-green-backgroud">
 			<table class="table table-condensed">

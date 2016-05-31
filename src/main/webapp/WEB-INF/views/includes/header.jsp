@@ -11,36 +11,36 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="icon" type="image/png"
-	href="${contextPath}/static/resources/icons/myicon.png" />
+	href="${contextPath}/icons/myicon.png" />
 
 <link rel="stylesheet"
-	href="<c:url value="${contextPath}/static/resources/css/style.css" />" />
+	href="<c:url value="${contextPath}/css/style.css" />" />
 
 <link rel="stylesheet"
-	href="<c:url value="${contextPath}/static/resources/css/lib/chessboard-0.3.0.css" />" />
+	href="<c:url value="${contextPath}/css/lib/chessboard-0.3.0.css" />" />
 
 <link rel="stylesheet"
-	href="<c:url value="${contextPath}/static/resources/css/lib/bootstrap.min.css" />" />
+	href="<c:url value="${contextPath}/css/lib/bootstrap.min.css" />" />
 <link rel="stylesheet"
-	href="<c:url value="${contextPath}/static/resources/css/lib/bootstrap-theme.min.css" />" />
+	href="<c:url value="${contextPath}/css/lib/bootstrap-theme.min.css" />" />
 
 <link rel="stylesheet"
-	href="<c:url value="${contextPath}/static/resources/css/lib/jquery.dataTables.min.css" />" />
+	href="<c:url value="${contextPath}/css/lib/jquery.dataTables.min.css" />" />
 
 <script type="text/javascript"
-	src="<c:url value="${contextPath}/static/resources/js/lib/jquery-2.1.4.min.js" />">
+	src="<c:url value="${contextPath}/js/lib/jquery-2.1.4.min.js" />">
 	
 </script>
 
 <script type="text/javascript"
-	src="<c:url value="${contextPath}/static/resources/js/lib/bootstrap.min.js" />">
+	src="<c:url value="${contextPath}/js/lib/bootstrap.min.js" />">
 	
 </script>
 <script type="text/javascript"
-	src="<c:url value="${contextPath}/static/resources/js/lib/jquery.dataTables.min.js" />"></script>
+	src="<c:url value="${contextPath}/js/lib/jquery.dataTables.min.js" />"></script>
 
 <script type="text/javascript"
-	src="<c:url value="${contextPath}/static/resources/js/lib/chessboard-0.3.0.js" />"></script>
+	src="<c:url value="${contextPath}/js/lib/chessboard-0.3.0.js" />"></script>
 
 <title>iboard games</title>
 </head>
