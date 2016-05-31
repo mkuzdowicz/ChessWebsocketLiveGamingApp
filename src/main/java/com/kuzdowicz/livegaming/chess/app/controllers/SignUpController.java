@@ -26,14 +26,16 @@ import com.kuzdowicz.livegaming.chess.app.services.MailService;
 @Controller
 public class SignUpController {
 
-	@Autowired
 	private UsersRepository usersRepository;
-
-	@Autowired
 	private PasswordEncoder passwordEncoder;
+	private MailService mailService;
 
 	@Autowired
-	private MailService mailService;
+	public SignUpController(UsersRepository usersRepository, PasswordEncoder passwordEncoder, MailService mailService) {
+		this.usersRepository = usersRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.mailService = mailService;
+	}
 
 	// sign in
 	@RequestMapping("/signup")

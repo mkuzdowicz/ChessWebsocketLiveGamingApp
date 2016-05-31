@@ -24,10 +24,12 @@ public class HomeController {
 	private static final Logger logger = Logger.getLogger(HomeController.class);
 
 	private UsersRepository repository;
+	private Gson gson;
 
 	@Autowired
-	public HomeController(UsersRepository repository) {
+	public HomeController(UsersRepository repository, Gson gson) {
 		this.repository = repository;
+		this.gson = gson;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -48,7 +50,6 @@ public class HomeController {
 		addBasicObjectsToModelAndView(bestPlayers, principal);
 		Pageable p = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "numberOfWonChessGames"));
 		List<UserAccount> bestPlayingUsers = repository.findAllWhereNumberOfWonChessGamesGt0(p);
-		Gson gson = new Gson();
 		bestPlayers.addObject("bestPlayersJson", gson.toJson(bestPlayingUsers));
 
 		return bestPlayers;

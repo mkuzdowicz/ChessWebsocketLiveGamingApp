@@ -29,16 +29,19 @@ import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 @Controller
 public class UserPanelController {
 
-	@Autowired
 	private UsersRepository usersRepository;
-
-	@Autowired
 	private ChessGamesRepository chessGamesRepository;
-
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	private static final Logger logger = Logger.getLogger(UserPanelController.class);
+
+	@Autowired
+	public UserPanelController(UsersRepository usersRepository, ChessGamesRepository chessGamesRepository,
+			PasswordEncoder passwordEncoder) {
+		this.usersRepository = usersRepository;
+		this.chessGamesRepository = chessGamesRepository;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@RequestMapping("/user/your-account")
 	public ModelAndView getLoggedInUserDetails(String errorrMessage, String successMessage, Principal principal) {
