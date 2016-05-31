@@ -47,8 +47,4 @@ public enum UserRoles {
 		this.userRoles = userRoles;
 	}
 
-	public static void main(String[] args) {
-		System.out.println(UserRoles.getUserRoles(2));
-	}
-
 }

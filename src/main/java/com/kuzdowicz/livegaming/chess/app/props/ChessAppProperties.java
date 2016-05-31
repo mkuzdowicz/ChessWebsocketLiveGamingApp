@@ -10,12 +10,8 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 public class ChessAppProperties {
 
-	private static final Logger logger = Logger
-			.getLogger(ChessAppProperties.class);
-
-	private static Resource resource = new ClassPathResource(
-			"/chessApp.properties");
-
+	private static final Logger logger = Logger.getLogger(ChessAppProperties.class);
+	private static Resource resource = new ClassPathResource("/chessApp.properties");
 	private static Properties props;
 
 	public static String getProperty(String key) {
@@ -27,21 +23,6 @@ public class ChessAppProperties {
 			logger.debug(e);
 		}
 		return property;
-	}
-
-	// FOR TEST
-	public static void main(String[] args) {
-		System.out.println(ChessAppProperties.getProperty("smtp.host"));
-		System.out.println(ChessAppProperties
-				.getProperty("mail.default.message.from"));
-		System.out.println(ChessAppProperties.getProperty("db.name"));
-		System.out.println(ChessAppProperties.getProperty("app.contextpath"));
-		System.out.println(ChessAppProperties.getProperty("domain.name"));
-		System.out.println(ChessAppProperties.getProperty("port"));
-		System.out.println(ChessAppProperties
-				.getProperty("mail.transport.protocol"));
-		System.out.println(ChessAppProperties
-				.getProperty("db.connectionstring"));
 	}
 
 }

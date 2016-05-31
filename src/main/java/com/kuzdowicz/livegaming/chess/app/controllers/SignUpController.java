@@ -5,18 +5,16 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.validation.BindingResult;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.forms.dto.SignUpForm;
@@ -32,19 +30,14 @@ public class SignUpController {
 	private UsersRepository usersRepository;
 
 	@Autowired
-	private SignUpForm signUpFomr;
-
-	@Autowired
 	private PasswordEncoder passwordEncoder;
-
-	private static final Logger logger = Logger.getLogger(SignUpController.class);
 
 	@Autowired
 	private MailService mailService;
 
 	// sign in
 	@RequestMapping("/signup")
-	public ModelAndView getSignUpForm(String msg) {
+	public ModelAndView getSignUpForm(SignUpForm signUpFomr, String msg) {
 
 		ModelAndView signUpSite = new ModelAndView("signup");
 		if (msg != null) {
@@ -91,7 +84,7 @@ public class SignUpController {
 		// validation
 		if (!userPassword.equals(confirmPassword)) {
 
-			return getSignUpForm(Messages.getProperty("error.passwords.notequal"));
+			return getSignUpForm(signUpFomr, Messages.getProperty("error.passwords.notequal"));
 		}
 
 		String hashPassword = passwordEncoder.encode(userPassword);
@@ -112,7 +105,7 @@ public class SignUpController {
 
 		if (creationMessage == null) {
 
-			return getSignUpForm(Messages.getProperty("error.login.exists"));
+			return getSignUpForm(signUpFomr, Messages.getProperty("error.login.exists"));
 
 		}
 
