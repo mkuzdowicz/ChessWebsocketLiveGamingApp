@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.kuzdowicz.livegaming.chess.app.constants.ChessMoveStatus;
@@ -20,33 +20,28 @@ import com.kuzdowicz.livegaming.chess.app.models.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 
-public class GameMessageProtocol {
+@Service
+public class GameMessageProtocolService {
 
-	private final static Logger log = Logger.getLogger(GameMessageProtocol.class);
+	private final static Logger log = Logger.getLogger(GameMessageProtocolService.class);
 
-	private WebSocketSessionsRepository wsSesionsRepository;
-	private GameUsersRepository gameUsersRepository;
-	private LiveChessGamesRepository chessGamesHandler;
+	private WebSocketSessionsRepository webSocketSessionsRepository;
+	private LiveGamingUsersRepository liveGamingUsersRepository;
+	private LiveChessGamesRepository liveChessGamesRepository;
 	private Gson gson;
-
-	@Autowired
 	private ChessGamesRepository chessGamesRepository;
-
-	@Autowired
 	private UsersRepository usersRepository;
 
-	public GameMessageProtocol(WebSocketSessionsRepository wsSesionsRepository, GameUsersRepository usesrHandler,
-			LiveChessGamesRepository chessGamesHandler) {
-		this.wsSesionsRepository = wsSesionsRepository;
-		this.gameUsersRepository = usesrHandler;
-		this.chessGamesHandler = chessGamesHandler;
-		gson = new Gson();
-
-		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-	}
-
-	public GameMessageProtocol() {
-
+	@Autowired
+	public GameMessageProtocolService(WebSocketSessionsRepository webSocketSessionsRepository,
+			LiveGamingUsersRepository liveGamingUsersRepository, LiveChessGamesRepository liveChessGamesRepository,
+			Gson gson, ChessGamesRepository chessGamesRepository, UsersRepository usersRepository) {
+		this.webSocketSessionsRepository = webSocketSessionsRepository;
+		this.liveGamingUsersRepository = liveGamingUsersRepository;
+		this.liveChessGamesRepository = liveChessGamesRepository;
+		this.gson = gson;
+		this.chessGamesRepository = chessGamesRepository;
+		this.usersRepository = usersRepository;
 	}
 
 	public synchronized void proccessMessage(GameMessage messageObj, String messageJsonString) {
@@ -74,12 +69,12 @@ public class GameMessageProtocol {
 		} else if (messageType.equals(GameMessageType.CHESS_MOVE)) {
 
 			String fromUsername = messageObj.getSendFrom();
-			GameUser fromUser = gameUsersRepository.getWebsocketUser(fromUsername);
+			GameUser fromUser = liveGamingUsersRepository.getWebsocketUser(fromUsername);
 
 			if (isUserPlayingWithAnyUser(fromUser)) {
 
 				String toUsername = messageObj.getSendTo();
-				GameUser toUser = gameUsersRepository.getWebsocketUser(toUsername);
+				GameUser toUser = liveGamingUsersRepository.getWebsocketUser(toUsername);
 
 				if (toUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)) {
 
@@ -87,10 +82,11 @@ public class GameMessageProtocol {
 
 						ChessMove currentMove = messageObj.getChessMove();
 
-						chessGamesHandler.addActualMoveToThisGameObject(toUser.getUniqueActualGameHash(), currentMove);
-						chessGamesHandler.incrementNumberOfMoves(toUser.getUniqueActualGameHash());
+						liveChessGamesRepository.addActualMoveToThisGameObject(toUser.getUniqueActualGameHash(),
+								currentMove);
+						liveChessGamesRepository.incrementNumberOfMoves(toUser.getUniqueActualGameHash());
 
-						wsSesionsRepository.sendToSession(toUsername, fromUsername, messageJsonString);
+						webSocketSessionsRepository.sendToSession(toUsername, fromUsername, messageJsonString);
 					} else {
 						log.debug(messageObj.getSendFrom()
 								+ " send message to user which he does not play with , ( to user: " + toUsername
@@ -117,15 +113,15 @@ public class GameMessageProtocol {
 
 			log.info("user " + messageObj.getSendFrom() + " join to participants");
 
-			wsSesionsRepository.sendToAllConnectedSessionsActualParticipantList();
+			webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 		}
 
 	}
 
 	private synchronized void saveStatisticsDataToDbIfQuitGameOrIfCheckMate(GameMessage messageObj) {
 
-		GameUser webSocketUserObj = gameUsersRepository.getWebsocketUser(messageObj.getSendFrom());
-		ChessGame game = chessGamesHandler.getGameByUniqueHashId(webSocketUserObj.getUniqueActualGameHash());
+		GameUser webSocketUserObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
+		ChessGame game = liveChessGamesRepository.getGameByUniqueHashId(webSocketUserObj.getUniqueActualGameHash());
 		game.setEndDate(new Date());
 		game.setEndingGameFENString(messageObj.getFen());
 		LiveChessGamesRepository.calculateAndSetTimeDurationBeetwenGameBeginAndEnd(game);
@@ -226,32 +222,32 @@ public class GameMessageProtocol {
 			String messageJsonString) {
 		log.debug("setUserComStatusIsDuringHandshakeAndRefresh()");
 
-		GameUser invitedUser = gameUsersRepository.getWebsocketUser(messageObj.getSendTo());
+		GameUser invitedUser = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
 
 		if (invitedUser != null
 				&& !invitedUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_DURING_HANDSHAKE)
 				&& !invitedUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)) {
 
-			gameUsersRepository.setComStatusIsDuringHandshake(messageObj.getSendFrom());
-			gameUsersRepository.setComStatusIsDuringHandshake(messageObj.getSendTo());
-			gameUsersRepository.setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
+			liveGamingUsersRepository.setComStatusIsDuringHandshake(messageObj.getSendFrom());
+			liveGamingUsersRepository.setComStatusIsDuringHandshake(messageObj.getSendTo());
+			liveGamingUsersRepository.setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
 
-			GameUser sendToObj = gameUsersRepository.getWebsocketUser(messageObj.getSendTo());
+			GameUser sendToObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
 			messageObj.setSendToObj(sendToObj);
 
-			GameUser sendFromObj = gameUsersRepository.getWebsocketUser(messageObj.getSendFrom());
+			GameUser sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
 			messageObj.setSendFromObj(sendFromObj);
 
 			sendMessageToOneUser(messageObj, gson.toJson(messageObj));
 
-			wsSesionsRepository.sendToAllConnectedSessionsActualParticipantList();
+			webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 		} else {
 			log.debug("invited user is already playing, is during handshake or is null");
 
 			GameMessage tryLaterMsg = new GameMessage();
 			tryLaterMsg.setType(GameMessageType.TRY_LATER);
 
-			wsSesionsRepository.sendToSession(messageObj.getSendFrom(), "server", gson.toJson(tryLaterMsg));
+			webSocketSessionsRepository.sendToSession(messageObj.getSendFrom(), "server", gson.toJson(tryLaterMsg));
 		}
 
 	}
@@ -261,15 +257,15 @@ public class GameMessageProtocol {
 
 		String actualChessGameUUID = UUID.randomUUID().toString();
 
-		gameUsersRepository.setComStatusIsPlaying(messageObj.getSendTo(), messageObj.getSendFrom());
-		gameUsersRepository.setComStatusIsPlaying(messageObj.getSendFrom(), messageObj.getSendTo());
+		liveGamingUsersRepository.setComStatusIsPlaying(messageObj.getSendTo(), messageObj.getSendFrom());
+		liveGamingUsersRepository.setComStatusIsPlaying(messageObj.getSendFrom(), messageObj.getSendTo());
 
-		GameUser sendToObj = gameUsersRepository.getWebsocketUser(messageObj.getSendTo());
+		GameUser sendToObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
 
 		sendToObj.setUniqueActualGameHash(actualChessGameUUID);
 		messageObj.setSendToObj(sendToObj);
 
-		GameUser sendFromObj = gameUsersRepository.getWebsocketUser(messageObj.getSendFrom());
+		GameUser sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
 
 		sendFromObj.setUniqueActualGameHash(actualChessGameUUID);
 		messageObj.setSendFromObj(sendFromObj);
@@ -278,11 +274,11 @@ public class GameMessageProtocol {
 		ChessGame chessGame = prepareAndReturnChessGameObjectAtGameStart(actualChessGameUUID, sendToObj, sendFromObj,
 				messageObj);
 
-		chessGamesHandler.addNewGame(chessGame);
+		liveChessGamesRepository.addNewGame(chessGame);
 
 		sendMessageToOneUser(messageObj, gson.toJson(messageObj));
 
-		wsSesionsRepository.sendToAllConnectedSessionsActualParticipantList();
+		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 
 	}
 
@@ -311,11 +307,11 @@ public class GameMessageProtocol {
 	private synchronized void setUserComStatusWaitForNewGameAndRefresh(GameMessage messageObj) {
 		log.debug("setUserComStatusWaitForNewGameAndRefresh()");
 
-		gameUsersRepository.setComStatusWaitForNewGame(messageObj.getSendFrom());
-		gameUsersRepository.setComStatusWaitForNewGame(messageObj.getSendTo());
-		gameUsersRepository.setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
+		liveGamingUsersRepository.setComStatusWaitForNewGame(messageObj.getSendFrom());
+		liveGamingUsersRepository.setComStatusWaitForNewGame(messageObj.getSendTo());
+		liveGamingUsersRepository.setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
 
-		wsSesionsRepository.sendToAllConnectedSessionsActualParticipantList();
+		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 	}
 
 	private synchronized void sendMessageToOneUser(GameMessage message, String content) {
@@ -327,7 +323,7 @@ public class GameMessageProtocol {
 		String fromUsername = message.getSendFrom();
 		if (toUsername != null && StringUtils.isNotEmpty(toUsername)) {
 
-			wsSesionsRepository.sendToSession(toUsername, fromUsername, content);
+			webSocketSessionsRepository.sendToSession(toUsername, fromUsername, content);
 		}
 	}
 

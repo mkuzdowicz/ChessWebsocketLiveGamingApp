@@ -71,8 +71,8 @@
 									pattern="dd-MM-yyyy" value="${chessGame.endDate}" /></td>
 							<td class="text-center">${chessGame.formattedGameDurationStr}</td>
 							<td class=" text-center">${chessGame.numberOfMoves}</td>
-							<td class=" text-center">${chessGame.whiteColUsername}</td>
-							<td class=" text-center">${chessGame.blackColUsername}</td>
+							<td class=" text-center">${chessGame.whitePlayerName}</td>
+							<td class=" text-center">${chessGame.blackPlayerName}</td>
 							<c:choose>
 								<c:when test="${chessGame.checkMate eq true}">
 									<td class="text-center nice-orange-bg-color white">yes</td>
@@ -83,7 +83,7 @@
 							</c:choose>
 
 							<td class=" text-center"><c:if
-									test="${chessGame.winnerUsername ne null}">${chessGame.winnerUsername}</c:if>
+									test="${chessGame.winnerName ne null}">${chessGame.winnerName}</c:if>
 							</td>
 							<td class=" text-center">
 								<button class="btn btn-success btn-block showEndPsoBtn"

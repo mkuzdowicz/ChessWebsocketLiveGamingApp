@@ -4,31 +4,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.GsonBuilder;
 import com.kuzdowicz.livegaming.chess.app.constants.ChessColor;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.models.GameUser;
 
-public class GameUsersRepository {
+@Component
+public class LiveGamingUsersRepository {
 
-	private final Logger logger = Logger.getLogger(GameUsersRepository.class);
-	private volatile static long userID = 0;
+	private final Logger logger = Logger.getLogger(LiveGamingUsersRepository.class);
 
 	protected volatile static Map<String, GameUser> gameUsersMap = new ConcurrentHashMap<>();
 
-	public synchronized Boolean userListNotContainsUsername(String username) {
-		if (gameUsersMap.containsKey(username)) {
-			return false;
-		}
-		return true;
-	}
-
 	public synchronized void addWebsocketUser(GameUser gameUser) {
-		logger.debug("");
 
-		userID++;
-		gameUser.setUserIdInGameContext(userID);
 		gameUsersMap.put(gameUser.getUsername(), gameUser);
 		logger.info("user: " + gameUser + " added to live game repository");
 	}
@@ -99,6 +90,13 @@ public class GameUsersRepository {
 			System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(gameUsersMap.get(key)));
 		}
 
+	}
+
+	public synchronized Boolean userListNotContainsUsername(String username) {
+		if (gameUsersMap.containsKey(username)) {
+			return false;
+		}
+		return true;
 	}
 
 }

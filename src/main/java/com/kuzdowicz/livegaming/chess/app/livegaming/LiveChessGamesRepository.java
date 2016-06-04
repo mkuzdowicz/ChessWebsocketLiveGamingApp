@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
+import org.springframework.stereotype.Component;
 
 import com.kuzdowicz.livegaming.chess.app.models.ChessGame;
 import com.kuzdowicz.livegaming.chess.app.models.ChessMove;
 
+@Component
 public class LiveChessGamesRepository {
 
 	private volatile static Map<String, ChessGame> chessGamesMap = new ConcurrentHashMap<>();

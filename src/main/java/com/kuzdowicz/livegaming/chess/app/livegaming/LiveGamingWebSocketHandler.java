@@ -19,15 +19,20 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 	private final static Logger log = Logger.getLogger(LiveGamingWebSocketHandler.class);
 
-	private final WebSocketSessionsRepository webSocketSessionsRepository = new WebSocketSessionsRepository();
-	private final GameUsersRepository usesrHandler = new GameUsersRepository();
-	private final LiveChessGamesRepository chessGamesHandler = new LiveChessGamesRepository();
-
-	private GameMessageProtocol gameMessageProtocol = new GameMessageProtocol(webSocketSessionsRepository, usesrHandler,
-			chessGamesHandler);
+	private final WebSocketSessionsRepository webSocketSessionsRepository;
+	private final LiveGamingUsersRepository liveGamingUsersRepository;
+	private final GameMessageProtocolService gameMessageProtocol;
+	private final Gson gson;
 
 	@Autowired
-	private Gson gson;
+	public LiveGamingWebSocketHandler(WebSocketSessionsRepository webSocketSessionsRepository,
+			LiveGamingUsersRepository liveGamingUsersRepository, GameMessageProtocolService gameMessageProtocol,
+			Gson gson) {
+		this.webSocketSessionsRepository = webSocketSessionsRepository;
+		this.liveGamingUsersRepository = liveGamingUsersRepository;
+		this.gameMessageProtocol = gameMessageProtocol;
+		this.gson = gson;
+	}
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -38,13 +43,13 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 		String[] connUriSpliietdBySlash = connectionUriPath.split("/");
 		String sender = connUriSpliietdBySlash[connUriSpliietdBySlash.length - 1];
 
-		if (usesrHandler.userListNotContainsUsername(sender)) {
+		if (liveGamingUsersRepository.userListNotContainsUsername(sender)) {
 
 			GameUser gameUser = new GameUser(sender);
 			gameUser.setCommunicationStatus(GameUserCommunicationStatus.WAIT_FOR_NEW_GAME);
 
 			webSocketSessionsRepository.addSession(sender, session);
-			usesrHandler.addWebsocketUser(gameUser);
+			liveGamingUsersRepository.addWebsocketUser(gameUser);
 			webSocketSessionsRepository.sendToAllConnectedSessions(gameUser.getUsername());
 		}
 
@@ -66,12 +71,12 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 		String sender = session.getAttributes().get("username").toString();
 
 		synchronized (this) {
-			GameUser cloesingConnectionUser = usesrHandler.getWebsocketUser(sender);
+			GameUser cloesingConnectionUser = liveGamingUsersRepository.getWebsocketUser(sender);
 
 			if (cloesingConnectionUser.getPlayNowWithUser() != null
 					&& cloesingConnectionUser.getPlayNowWithUser() != "") {
 
-				GameUser cloesingConnectionUserGamePartner = usesrHandler
+				GameUser cloesingConnectionUserGamePartner = liveGamingUsersRepository
 						.getWebsocketUser(cloesingConnectionUser.getPlayNowWithUser());
 
 				cloesingConnectionUserGamePartner.setPlayNowWithUser(null);
@@ -84,7 +89,7 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 						gson.toJson(disconnectMsg));
 			}
 
-			usesrHandler.removeWebsocketUser(sender);
+			liveGamingUsersRepository.removeWebsocketUser(sender);
 			webSocketSessionsRepository.removeSession(sender);
 		}
 		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
