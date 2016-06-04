@@ -1,7 +1,8 @@
-package com.kuzdowicz.livegaming.chess.app.websockets;
+package com.kuzdowicz.livegaming.chess.app.livegaming;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -12,15 +13,15 @@ import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.models.GameMessage;
 import com.kuzdowicz.livegaming.chess.app.models.GameUser;
-import com.kuzdowicz.livegaming.chess.app.protocols.GameMessageProtocol;
 
-public class MyWebSocketHandler extends TextWebSocketHandler {
+@Component
+public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
-	private final static Logger log = Logger.getLogger(MyWebSocketHandler.class);
+	private final static Logger log = Logger.getLogger(LiveGamingWebSocketHandler.class);
 
 	private final WebSocketSessionsRepository webSocketSessionsRepository = new WebSocketSessionsRepository();
 	private final GameUsersRepository usesrHandler = new GameUsersRepository();
-	private final ChessGamesHandler chessGamesHandler = new ChessGamesHandler();
+	private final LiveChessGamesRepository chessGamesHandler = new LiveChessGamesRepository();
 
 	private GameMessageProtocol gameMessageProtocol = new GameMessageProtocol(webSocketSessionsRepository, usesrHandler,
 			chessGamesHandler);
@@ -31,7 +32,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
-		log.info("afterConnectionEstablished() ------");
+		log.debug("afterConnectionEstablished()");
 
 		String connectionUriPath = session.getUri().getPath();
 		String[] connUriSpliietdBySlash = connectionUriPath.split("/");
@@ -60,12 +61,10 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-		log.info("afterConnectionClosed()");
-		log.info("connection closed");
+		log.debug("afterConnectionClosed()");
 
 		String sender = session.getAttributes().get("username").toString();
 
-		log.info(sender);
 		synchronized (this) {
 			GameUser cloesingConnectionUser = usesrHandler.getWebsocketUser(sender);
 
@@ -95,7 +94,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		log.debug("there was an error with connection");
-		log.debug(exception);
+		log.warn(exception);
 	}
 
 }

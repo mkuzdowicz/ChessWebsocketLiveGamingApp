@@ -1,10 +1,8 @@
-package com.kuzdowicz.livegaming.chess.app.websockets;
+package com.kuzdowicz.livegaming.chess.app.livegaming;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.socket.TextMessage;
@@ -15,9 +13,9 @@ import com.google.gson.GsonBuilder;
 
 public class WebSocketSessionsRepository {
 
-	private final Logger logger = Logger.getLogger(WebSocketSessionsRepository.class);
+	private final static Logger logger = Logger.getLogger(WebSocketSessionsRepository.class);
 
-	volatile static Map<String, WebSocketSession> sessionsMap = new ConcurrentHashMap<>();
+	protected volatile static Map<String, WebSocketSession> sessionsMap = new ConcurrentHashMap<>();
 
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -28,12 +26,10 @@ public class WebSocketSessionsRepository {
 	}
 
 	public synchronized void removeSession(String username) {
-		WebSocketSession session = sessionsMap.remove(username);
-		logger.info("session: " + session.getId() + " removed");
+		sessionsMap.remove(username);
 	}
 
 	public void sendToAllConnectedSessions(String msg) {
-		logger.info("sendToAllConnectedSessions");
 		for (String username : sessionsMap.keySet()) {
 			WebSocketSession userSession = sessionsMap.get(username);
 			try {
@@ -41,7 +37,7 @@ public class WebSocketSessionsRepository {
 				TextMessage tm = new TextMessage(jsonUsersList.getBytes());
 				userSession.sendMessage(tm);
 			} catch (IOException e) {
-				logger.info(e);
+				logger.warn(e);
 			}
 		}
 	}
@@ -49,56 +45,30 @@ public class WebSocketSessionsRepository {
 	public synchronized void sendToAllConnectedSessionsActualParticipantList() {
 
 		try {
-
 			String jsonUsersList = gson.toJson(GameUsersRepository.gameUsersMap.values());
 
 			for (String username : sessionsMap.keySet()) {
 				WebSocketSession userSession = sessionsMap.get(username);
 				if (userSession != null) {
-
 					TextMessage tm = new TextMessage(jsonUsersList.getBytes());
 					userSession.sendMessage(tm);
-
 				}
-
 			}
 		} catch (Exception e) {
-			logger.info(e);
+			logger.warn(e);
 		}
 	}
 
 	public void sendToSession(String toUsernameName, String fromUsername, String message) {
-		logger.info("sendToSession()");
-
 		WebSocketSession userSession = sessionsMap.get(toUsernameName);
 		if (userSession != null) {
 			try {
 				TextMessage tm = new TextMessage(message.getBytes());
 				userSession.sendMessage(tm);
 			} catch (IOException e) {
-				logger.debug(e);
+				logger.warn(e);
 			}
 		}
-
-	}
-
-	public void printOutAllSessionsOnOpen(Session addedSession) {
-
-		logger.info("dodano sesje: " + addedSession.getId());
-		logger.info("sessionOwner: " + addedSession.getUserProperties().get("sessionOwner"));
-
-		logger.info("obecne sesje: ");
-		for (String username : sessionsMap.keySet()) {
-			WebSocketSession session = sessionsMap.get(username);
-			logger.info(session);
-		}
-
-	}
-
-	public void printOutAllSessions() {
-
-		logger.info("obecne sesje: ");
-		System.out.println(sessionsMap);
 
 	}
 
@@ -107,17 +77,6 @@ public class WebSocketSessionsRepository {
 			return true;
 		}
 		return false;
-	}
-
-	public void printOutAllSessionsOnClose(Session removedSession) {
-		logger.info("usunieto sesje: " + removedSession.getId());
-		logger.info("sessionOwner: " + removedSession.getUserProperties().get("sessionOwner"));
-
-		logger.info("pozostałe sesje: ");
-		for (String username : sessionsMap.keySet()) {
-			WebSocketSession session = sessionsMap.get(username);
-			logger.info(session.getId());
-		}
 	}
 
 }

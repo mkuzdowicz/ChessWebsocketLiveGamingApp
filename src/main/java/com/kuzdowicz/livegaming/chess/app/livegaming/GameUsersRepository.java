@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.websockets;
+package com.kuzdowicz.livegaming.chess.app.livegaming;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
