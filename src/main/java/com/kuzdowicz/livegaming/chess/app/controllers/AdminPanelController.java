@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
-import com.kuzdowicz.livegaming.chess.app.forms.dto.EditForm;
-import com.kuzdowicz.livegaming.chess.app.forms.dto.SignUpForm;
-import com.kuzdowicz.livegaming.chess.app.models.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
 import com.kuzdowicz.livegaming.chess.app.props.Messages;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 

@@ -1,28 +1,26 @@
-package com.kuzdowicz.livegaming.chess.app.forms.dto;
+package com.kuzdowicz.livegaming.chess.app.dto.forms;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-public class EditForm {
+public class SignUpForm {
 
+	@NotNull(message = "please enter a login")
+	@Size(min = 5, max = 12, message = "your login should be between 5 - 12 characters")
 	private String username;
 
-	@Size(max = 15, message = "name should be maximum 10 characters")
-	private String name;
-
-	@Size(max = 15, message = "lastname should be maximum 15 characters")
-	private String lastname;
-
+	@NotNull(message = "please enter your email")
 	@Pattern(regexp = "((?=.+@.+\\..+).{8,40})", message = "wrong email!")
 	private String email;
 
+	@NotNull(message = "please enter a password")
 	@Pattern(regexp = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,30})", message = "password should have at least one digit, at least one capital letter, be between 8 - 30 characters")
 	private String password;
 
+	@NotNull(message = "please enter a password")
 	@Pattern(regexp = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,30})", message = "password should have at least one digit, at least one capital letter, be between 8 - 30 characters")
 	private String confirmPassword;
-
-	private Boolean changePasswordFlag;
 
 	private Boolean grantAdminAuthorities;
 
@@ -58,30 +56,6 @@ public class EditForm {
 		this.confirmPassword = confirmPassword;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getLastname() {
-		return lastname;
-	}
-
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public Boolean getChangePasswordFlag() {
-		return changePasswordFlag;
-	}
-
-	public void setChangePasswordFlag(Boolean changePasswordFlag) {
-		this.changePasswordFlag = changePasswordFlag;
-	}
-
 	public Boolean getGrantAdminAuthorities() {
 		return grantAdminAuthorities;
 	}
@@ -92,11 +66,10 @@ public class EditForm {
 
 	@Override
 	public String toString() {
-		return "EditForm [username=" + username + ", name=" + name
-				+ ", lastname=" + lastname + ", email=" + email + ", password="
-				+ password + ", confirmPassword=" + confirmPassword
-				+ ", changePasswordFlag=" + changePasswordFlag
-				+ ", grantAdminAuthorities=" + grantAdminAuthorities + "]";
+		return "SignUpForm [username=" + username + ", email=" + email
+				+ ", password=" + password + ", confirmPassword="
+				+ confirmPassword + ", grantAdminAuthorities="
+				+ grantAdminAuthorities + "]";
 	}
 
 }

@@ -1,12 +1,5 @@
-package com.kuzdowicz.livegaming.chess.app.models;
+package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
-import org.springframework.stereotype.Component;
-
-/*
- * Java representation of Move object
- * in chess.js 
- */
-@Component
 public class ChessMove {
 
 	private String color;
@@ -62,12 +55,6 @@ public class ChessMove {
 
 	public void setSan(String san) {
 		this.san = san;
-	}
-
-	@Override
-	public String toString() {
-		return "Move [color=" + color + ", flags=" + flags + ", from=" + from
-				+ ", to=" + to + ", piece=" + piece + ", san=" + san + "]";
 	}
 
 }

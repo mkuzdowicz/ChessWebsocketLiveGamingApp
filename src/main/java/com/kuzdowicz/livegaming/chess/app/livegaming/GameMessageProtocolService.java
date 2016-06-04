@@ -12,11 +12,11 @@ import com.google.gson.Gson;
 import com.kuzdowicz.livegaming.chess.app.constants.ChessMoveStatus;
 import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
-import com.kuzdowicz.livegaming.chess.app.models.ChessGame;
-import com.kuzdowicz.livegaming.chess.app.models.ChessMove;
-import com.kuzdowicz.livegaming.chess.app.models.GameMessage;
-import com.kuzdowicz.livegaming.chess.app.models.GameUser;
-import com.kuzdowicz.livegaming.chess.app.models.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
+import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMove;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessage;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameUser;
 import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 
@@ -25,12 +25,12 @@ public class GameMessageProtocolService {
 
 	private final static Logger log = Logger.getLogger(GameMessageProtocolService.class);
 
-	private WebSocketSessionsRepository webSocketSessionsRepository;
-	private LiveGamingUsersRepository liveGamingUsersRepository;
-	private LiveChessGamesRepository liveChessGamesRepository;
-	private Gson gson;
-	private ChessGamesRepository chessGamesRepository;
-	private UsersRepository usersRepository;
+	private final WebSocketSessionsRepository webSocketSessionsRepository;
+	private final LiveGamingUsersRepository liveGamingUsersRepository;
+	private final LiveChessGamesRepository liveChessGamesRepository;
+	private final Gson gson;
+	private final ChessGamesRepository chessGamesRepository;
+	private final UsersRepository usersRepository;
 
 	@Autowired
 	public GameMessageProtocolService(WebSocketSessionsRepository webSocketSessionsRepository,

@@ -13,8 +13,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.springframework.stereotype.Component;
 
-import com.kuzdowicz.livegaming.chess.app.models.ChessGame;
-import com.kuzdowicz.livegaming.chess.app.models.ChessMove;
+import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMove;
 
 @Component
 public class LiveChessGamesRepository {

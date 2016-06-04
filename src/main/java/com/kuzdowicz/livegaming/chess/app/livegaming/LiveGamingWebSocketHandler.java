@@ -11,8 +11,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.google.gson.Gson;
 import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
-import com.kuzdowicz.livegaming.chess.app.models.GameMessage;
-import com.kuzdowicz.livegaming.chess.app.models.GameUser;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessage;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameUser;
 
 @Component
 public class LiveGamingWebSocketHandler extends TextWebSocketHandler {

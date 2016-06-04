@@ -19,7 +19,7 @@ public class WebSocketSessionsRepository {
 
 	protected volatile static Map<String, WebSocketSession> sessionsMap = new ConcurrentHashMap<>();
 
-	private Gson gson;
+	private final Gson gson;
 
 	@Autowired
 	public WebSocketSessionsRepository(Gson gson) {

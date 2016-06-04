@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.GsonBuilder;
 import com.kuzdowicz.livegaming.chess.app.constants.ChessColor;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
-import com.kuzdowicz.livegaming.chess.app.models.GameUser;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameUser;
 
 @Component
 public class LiveGamingUsersRepository {

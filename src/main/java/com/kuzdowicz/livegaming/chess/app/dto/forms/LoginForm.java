@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.forms.dto;
+package com.kuzdowicz.livegaming.chess.app.dto.forms;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

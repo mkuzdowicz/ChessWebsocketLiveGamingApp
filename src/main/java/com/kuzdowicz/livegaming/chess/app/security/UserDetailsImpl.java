@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
-import com.kuzdowicz.livegaming.chess.app.models.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 
 public class UserDetailsImpl implements UserDetails {
 

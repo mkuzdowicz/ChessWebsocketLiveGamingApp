@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.models;
+package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
 public class GameUser {
 

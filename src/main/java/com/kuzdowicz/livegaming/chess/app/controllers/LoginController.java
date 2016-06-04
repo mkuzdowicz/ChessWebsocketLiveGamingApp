@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kuzdowicz.livegaming.chess.app.forms.dto.LoginForm;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.LoginForm;
 import com.kuzdowicz.livegaming.chess.app.props.Messages;
 
 @Controller

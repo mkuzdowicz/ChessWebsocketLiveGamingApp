@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kuzdowicz.livegaming.chess.app.models.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.props.Messages;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 

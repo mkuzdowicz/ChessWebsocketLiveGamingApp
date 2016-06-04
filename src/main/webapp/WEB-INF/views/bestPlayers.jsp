@@ -3,7 +3,6 @@
 <div class="main-wrapper ">
 
 	<%@ page import="java.util.List"%>
-	<%@ page import="com.kuzdowicz.livegaming.chess.app.models.UserAccount"%>
 	<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 	<script src="<c:url value="/js/main.js" />"></script>
 	<script src="<c:url value="/js/lib/jquery.canvasjs.min.js" />"></script>

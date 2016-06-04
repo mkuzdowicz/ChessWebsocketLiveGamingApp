@@ -1,8 +1,5 @@
-package com.kuzdowicz.livegaming.chess.app.models;
+package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class GameMessage {
 
 	private String type;
@@ -117,16 +114,6 @@ public class GameMessage {
 
 	public void setBlackColUsername(String blackColUsername) {
 		this.blackColUsername = blackColUsername;
-	}
-
-	@Override
-	public String toString() {
-		return "WebSocketMessage [type=" + type + ", fen=" + fen + ", sendTo="
-				+ sendTo + ", sendFrom=" + sendFrom + ", moveStatus="
-				+ moveStatus + ", sendToObj=" + sendToObj + ", sendFromObj="
-				+ sendFromObj + ", checkMate=" + checkMate + ", chessMove="
-				+ chessMove + ", whiteColUsername=" + whiteColUsername
-				+ ", blackColUsername=" + blackColUsername + "]";
 	}
 
 }

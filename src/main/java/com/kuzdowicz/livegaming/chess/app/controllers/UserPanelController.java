@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kuzdowicz.livegaming.chess.app.forms.dto.EditForm;
-import com.kuzdowicz.livegaming.chess.app.models.ChessGame;
-import com.kuzdowicz.livegaming.chess.app.models.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
+import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
 import com.kuzdowicz.livegaming.chess.app.props.Messages;
 import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
