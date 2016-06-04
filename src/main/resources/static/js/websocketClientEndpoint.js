@@ -23,7 +23,7 @@ function connectToWebSocket() {
 
 	webSocket.onopen = function(event) {
 		console.log("Server connected \n");
-		console.log(event.data);
+		console.log(event);
 
 		$('#disconnect').attr("disabled", false);
 
@@ -56,6 +56,11 @@ function connectToWebSocket() {
 	webSocket.onmessage = function(event) {
 		console.log("onmessage: ");
 
+		console.log(event);
+
+		console.log('----------------------');
+		console.log(event.data);
+
 		clientMsgProtocol.proccessMessage(event);
 
 	};
@@ -64,7 +69,7 @@ function connectToWebSocket() {
 
 	webSocket.onclose = function(event) {
 
-		$('#connection-status').html(
+		 $('#connection-status').html(
 				"<div class=\"alert alert-warning connection-status-msg\">"
 						+ "<h2>You are disconnected!</h2></div>");
 
@@ -88,6 +93,8 @@ function connectToWebSocket() {
 		$('#startPosBtn').show();
 
 		OPPONENT_USERNAME = "";
+
+		console.log('close');
 
 		console.log(event);
 	};

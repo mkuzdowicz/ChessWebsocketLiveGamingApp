@@ -1,8 +1,7 @@
 <%@ page import="com.kuzdowicz.livegaming.chess.app.props.*"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%
-	String contextURL = ChessAppProperties
-			.getProperty("app.contextpath");
+	String contextURL = ChessAppProperties.getProperty("app.contextpath");
 %>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -61,4 +60,6 @@
 	<c:if test="${successMsg ne null}">
 		<h2 class="alert alert-success text-center">${successMsg}</h2>
 	</c:if>
+	<input type="hidden" name="${_csrf.parameterName}"
+		value="${_csrf.token}" />
 </form:form>

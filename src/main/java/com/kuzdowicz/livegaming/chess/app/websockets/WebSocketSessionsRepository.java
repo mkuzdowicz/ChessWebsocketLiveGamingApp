@@ -7,34 +7,39 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.websocket.Session;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-@Component
 public class WebSocketSessionsRepository {
 
 	private final Logger logger = Logger.getLogger(WebSocketSessionsRepository.class);
-	private volatile static Map<String, Session> sessionsMap = new ConcurrentHashMap<>();
 
-	@Autowired
-	private Gson gson;
+	volatile static Map<String, WebSocketSession> sessionsMap = new ConcurrentHashMap<>();
 
-	public synchronized void addSession(String username, Session session) {
+	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+	public synchronized void addSession(String username, WebSocketSession session) {
+		String usernameKey = "username";
+		session.getAttributes().put(usernameKey, username);
 		sessionsMap.put(username, session);
 	}
 
 	public synchronized void removeSession(String username) {
-		Session session = sessionsMap.remove(username);
+		WebSocketSession session = sessionsMap.remove(username);
 		logger.info("session: " + session.getId() + " removed");
 	}
 
 	public void sendToAllConnectedSessions(String msg) {
+		logger.info("sendToAllConnectedSessions");
 		for (String username : sessionsMap.keySet()) {
-			Session userSession = sessionsMap.get(username);
+			WebSocketSession userSession = sessionsMap.get(username);
 			try {
-				userSession.getBasicRemote().sendText(msg);
+				String jsonUsersList = gson.toJson(GameUsersRepository.gameUsersMap.values());
+				TextMessage tm = new TextMessage(jsonUsersList.getBytes());
+				userSession.sendMessage(tm);
 			} catch (IOException e) {
 				logger.info(e);
 			}
@@ -43,24 +48,33 @@ public class WebSocketSessionsRepository {
 
 	public synchronized void sendToAllConnectedSessionsActualParticipantList() {
 
-		String jsonUsersList = gson.toJson(GameUsersRepository.gameUsersMap.values());
-		for (String username : sessionsMap.keySet()) {
-			Session userSession = sessionsMap.get(username);
-			try {
-				userSession.getBasicRemote().sendText(jsonUsersList);
-			} catch (IOException e) {
-				logger.info(e);
+		try {
+
+			String jsonUsersList = gson.toJson(GameUsersRepository.gameUsersMap.values());
+
+			for (String username : sessionsMap.keySet()) {
+				WebSocketSession userSession = sessionsMap.get(username);
+				if (userSession != null) {
+
+					TextMessage tm = new TextMessage(jsonUsersList.getBytes());
+					userSession.sendMessage(tm);
+
+				}
+
 			}
+		} catch (Exception e) {
+			logger.info(e);
 		}
 	}
 
 	public void sendToSession(String toUsernameName, String fromUsername, String message) {
 		logger.info("sendToSession()");
 
-		Session userSession = sessionsMap.get(toUsernameName);
+		WebSocketSession userSession = sessionsMap.get(toUsernameName);
 		if (userSession != null) {
 			try {
-				userSession.getBasicRemote().sendText(message);
+				TextMessage tm = new TextMessage(message.getBytes());
+				userSession.sendMessage(tm);
 			} catch (IOException e) {
 				logger.debug(e);
 			}
@@ -75,16 +89,21 @@ public class WebSocketSessionsRepository {
 
 		logger.info("obecne sesje: ");
 		for (String username : sessionsMap.keySet()) {
-			Session session = sessionsMap.get(username);
-			System.out.println(session);
+			WebSocketSession session = sessionsMap.get(username);
+			logger.info(session);
 		}
 
 	}
 
+	public void printOutAllSessions() {
+
+		logger.info("obecne sesje: ");
+		System.out.println(sessionsMap);
+
+	}
+
 	public Boolean userHaveSessionAndIsConnected(String username) {
-		Session userSession = sessionsMap.get(username);
-		Map<String, Object> userPropertiesInSession = userSession.getUserProperties();
-		if (userPropertiesInSession.containsValue(username)) {
+		if (sessionsMap.containsKey(username)) {
 			return true;
 		}
 		return false;
@@ -96,8 +115,8 @@ public class WebSocketSessionsRepository {
 
 		logger.info("pozostałe sesje: ");
 		for (String username : sessionsMap.keySet()) {
-			Session session = sessionsMap.get(username);
-			System.out.println(session.getId());
+			WebSocketSession session = sessionsMap.get(username);
+			logger.info(session.getId());
 		}
 	}
 

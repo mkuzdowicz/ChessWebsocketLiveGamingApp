@@ -4,16 +4,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
 
+import com.google.gson.GsonBuilder;
+import com.kuzdowicz.livegaming.chess.app.constants.ChessColor;
+import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.models.GameUser;
-import com.kuzdowicz.livegaming.chess.app.protocols.ChessColor;
-import com.kuzdowicz.livegaming.chess.app.protocols.GameUserCommunicationStatus;
 
-@Component
 public class GameUsersRepository {
 
-	private final Logger logger  = Logger.getLogger(GameUsersRepository.class);
+	private final Logger logger = Logger.getLogger(GameUsersRepository.class);
 	private volatile static long userID = 0;
 
 	protected volatile static Map<String, GameUser> gameUsersMap = new ConcurrentHashMap<>();
@@ -44,8 +43,7 @@ public class GameUsersRepository {
 		logger.info("user: " + gameUser + " removed from live game repository");
 	}
 
-	public synchronized void setUserComunicationStatus(String username,
-			String status) {
+	public synchronized void setUserComunicationStatus(String username, String status) {
 		GameUser gameUser = gameUsersMap.get(username);
 		gameUser.setCommunicationStatus(status);
 	}
@@ -53,8 +51,7 @@ public class GameUsersRepository {
 	public synchronized void setComStatusIsDuringHandshake(String username) {
 		logger.debug("setComStatusIsPlaying()");
 
-		setUserComunicationStatus(username,
-				GameUserCommunicationStatus.IS_DURING_HANDSHAKE);
+		setUserComunicationStatus(username, GameUserCommunicationStatus.IS_DURING_HANDSHAKE);
 	}
 
 	public synchronized void setComStatusWaitForNewGame(String username) {
@@ -65,8 +62,7 @@ public class GameUsersRepository {
 		gameUser.setPlayNowWithUser(null);
 	}
 
-	public synchronized void setComStatusIsPlaying(String toUsername,
-			String fromUsername) {
+	public synchronized void setComStatusIsPlaying(String toUsername, String fromUsername) {
 		logger.debug("setComStatusIsPlaying()");
 
 		GameUser gameUser = gameUsersMap.get(toUsername);
@@ -75,8 +71,7 @@ public class GameUsersRepository {
 
 	}
 
-	public synchronized void setChessPiecesColorForGamers(String toUsername,
-			String fromUsername) {
+	public synchronized void setChessPiecesColorForGamers(String toUsername, String fromUsername) {
 		logger.debug("setChessPiecesColorForGamers()");
 
 		GameUser invitingUser = gameUsersMap.get(fromUsername);
@@ -87,8 +82,7 @@ public class GameUsersRepository {
 
 	}
 
-	public synchronized void resetChessPiecesColorForGamers(String toUsername,
-			String fromUsername) {
+	public synchronized void resetChessPiecesColorForGamers(String toUsername, String fromUsername) {
 		logger.debug("setChessPiecesColorForGamers()");
 
 		GameUser invitingUser = gameUsersMap.get(fromUsername);
@@ -102,7 +96,7 @@ public class GameUsersRepository {
 	public void printOutUsersList() {
 		logger.info("printOutUsersList()");
 		for (String key : gameUsersMap.keySet()) {
-			System.out.println(gameUsersMap.get(key));
+			System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(gameUsersMap.get(key)));
 		}
 
 	}

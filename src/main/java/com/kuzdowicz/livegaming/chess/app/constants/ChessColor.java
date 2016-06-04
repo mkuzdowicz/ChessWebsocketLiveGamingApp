@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.protocols;
+package com.kuzdowicz.livegaming.chess.app.constants;
 
 public class ChessColor {
 	

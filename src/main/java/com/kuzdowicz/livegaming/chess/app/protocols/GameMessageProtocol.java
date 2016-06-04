@@ -6,10 +6,12 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.google.gson.Gson;
+import com.kuzdowicz.livegaming.chess.app.constants.ChessMoveStatus;
+import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
+import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.models.ChessGame;
 import com.kuzdowicz.livegaming.chess.app.models.ChessMove;
 import com.kuzdowicz.livegaming.chess.app.models.GameMessage;
@@ -21,7 +23,6 @@ import com.kuzdowicz.livegaming.chess.app.websockets.ChessGamesHandler;
 import com.kuzdowicz.livegaming.chess.app.websockets.GameUsersRepository;
 import com.kuzdowicz.livegaming.chess.app.websockets.WebSocketSessionsRepository;
 
-@Service
 public class GameMessageProtocol {
 
 	private final static Logger log = Logger.getLogger(GameMessageProtocol.class);
@@ -56,7 +57,12 @@ public class GameMessageProtocol {
 
 	public synchronized void proccessMessage(GameMessage messageObj, String messageJsonString) {
 
+		log.info("proccessMessage()");
+		log.info(messageJsonString);
+
 		String messageType = messageObj.getType();
+
+		System.out.println(gson.toJson(messageObj));
 
 		if (messageType.equals(GameMessageType.GAME_HANDSHAKE_INVITATION)) {
 
@@ -116,7 +122,7 @@ public class GameMessageProtocol {
 
 		} else if (messageType.equals(GameMessageType.USER_CONNECT)) {
 
-			log.debug("user " + messageObj.getSendFrom() + " join to participants");
+			log.info("user " + messageObj.getSendFrom() + " join to participants");
 
 			wsSesionsRepository.sendToAllConnectedSessionsActualParticipantList();
 		}

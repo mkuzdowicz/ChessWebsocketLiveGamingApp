@@ -1,6 +1,5 @@
 <%@ page import="com.kuzdowicz.livegaming.chess.app.props.*"%>
-<%@ taglib
-	prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%
 	String contextURL = ChessAppProperties.getProperty("app.contextpath");
 %>
@@ -100,6 +99,9 @@
 				value="change data" />
 		</div>
 	</div>
+
+	<input type="hidden" name="${_csrf.parameterName}"
+		value="${_csrf.token}" />
 
 </form:form>
 <script>
