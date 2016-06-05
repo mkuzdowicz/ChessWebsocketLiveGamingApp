@@ -10,7 +10,8 @@
 			</div>
 			<div class="modal-body text-center">
 				<form class="add-form" method="POST" action="/admin/users/remove">
-					<input type="hidden" id="id" name="username">
+					<input type="hidden" id="id" name="username"> <input
+						type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
 					<p class="text-center">
 						<button type="button" class="btn btn-default" data-dismiss="modal">No</button>

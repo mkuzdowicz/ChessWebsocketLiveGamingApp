@@ -9,6 +9,8 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,25 +24,27 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
-import com.kuzdowicz.livegaming.chess.app.props.Messages;
 import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 
 @Controller
+@PropertySource("classpath:messages.properties")
 public class UserPanelController {
-
-	private UsersRepository usersRepository;
-	private ChessGamesRepository chessGamesRepository;
-	private PasswordEncoder passwordEncoder;
 
 	private static final Logger logger = Logger.getLogger(UserPanelController.class);
 
+	private final UsersRepository usersRepository;
+	private final ChessGamesRepository chessGamesRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final Environment env;
+
 	@Autowired
 	public UserPanelController(UsersRepository usersRepository, ChessGamesRepository chessGamesRepository,
-			PasswordEncoder passwordEncoder) {
+			PasswordEncoder passwordEncoder, Environment env) {
 		this.usersRepository = usersRepository;
 		this.chessGamesRepository = chessGamesRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.env = env;
 	}
 
 	@RequestMapping("/user/your-account")
@@ -97,7 +101,7 @@ public class UserPanelController {
 
 		if (changePasswordFlag && !password.equals(confirmPassword)) {
 
-			return getLoggedInUserDetails(Messages.getProperty("error.passwords.notequal"), null, principal);
+			return getLoggedInUserDetails(env.getProperty("error.passwords.notequal"), null, principal);
 		}
 
 		UserAccount user = usersRepository.findOneByUsername(userLogin);
@@ -120,7 +124,7 @@ public class UserPanelController {
 		user.setEmail(email);
 		usersRepository.save(user);
 
-		return getLoggedInUserDetails(null, Messages.getProperty("success.user.edit"), principal);
+		return getLoggedInUserDetails(null, env.getProperty("success.user.edit"), principal);
 	}
 
 	@RequestMapping(value = "/user/your-chessgames", method = RequestMethod.GET)

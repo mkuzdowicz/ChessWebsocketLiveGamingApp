@@ -4,18 +4,28 @@ import java.security.Principal;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.dto.forms.LoginForm;
-import com.kuzdowicz.livegaming.chess.app.props.Messages;
 
 @Controller
+@PropertySource("classpath:messages.properties")
 public class LoginController {
 
 	private static final Logger logger = Logger.getLogger(LoginController.class);
+
+	private final Environment env;
+
+	@Autowired
+	public LoginController(Environment env) {
+		this.env = env;
+	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView getLoginPage(LoginForm loginForm, Principal principal) {
@@ -32,7 +42,7 @@ public class LoginController {
 		logger.debug("getFailPage()");
 
 		ModelAndView errorPage = new ModelAndView("error");
-		errorPage.addObject("errorMessage", Messages.getProperty("error.loginfailed"));
+		errorPage.addObject("errorMessage", env.getProperty("error.loginfailed"));
 
 		return errorPage;
 

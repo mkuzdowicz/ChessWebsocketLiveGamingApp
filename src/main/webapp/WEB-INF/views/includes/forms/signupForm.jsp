@@ -1,9 +1,4 @@
-<%@ page import="com.kuzdowicz.livegaming.chess.app.props.*"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%
-	String contextURL = ChessAppProperties.getProperty("app.contextpath");
-%>
-
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <c:choose>

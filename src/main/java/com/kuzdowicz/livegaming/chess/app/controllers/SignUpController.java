@@ -9,6 +9,8 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,24 +23,27 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
-import com.kuzdowicz.livegaming.chess.app.props.Messages;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 import com.kuzdowicz.livegaming.chess.app.services.MailService;
 
 @Controller
+@PropertySource("classpath:messages.properties")
 public class SignUpController {
 
 	private final static Logger logger = Logger.getLogger(SignUpController.class);
 
-	private UsersRepository usersRepository;
-	private PasswordEncoder passwordEncoder;
-	private MailService mailService;
+	private final UsersRepository usersRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final MailService mailService;
+	private final Environment env;
 
 	@Autowired
-	public SignUpController(UsersRepository usersRepository, PasswordEncoder passwordEncoder, MailService mailService) {
+	public SignUpController(UsersRepository usersRepository, PasswordEncoder passwordEncoder, MailService mailService,
+			Environment env) {
 		this.usersRepository = usersRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.mailService = mailService;
+		this.env = env;
 	}
 
 	// sign in
@@ -89,7 +94,7 @@ public class SignUpController {
 		// validation
 		if (!userPassword.equals(confirmPassword)) {
 
-			return getSignUpForm(signUpFomr, Messages.getProperty("error.passwords.notequal"), principa);
+			return getSignUpForm(signUpFomr, env.getProperty("error.passwords.notequal"), principa);
 		}
 
 		return createAccount(signUpFomr, principa);
@@ -120,12 +125,12 @@ public class SignUpController {
 			mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
 		} catch (Exception e) {
 			logger.warn(e);
-			return getSignUpForm(signUpFomr, Messages.getProperty("error.confirmation.mail"), principa);
+			return getSignUpForm(signUpFomr, env.getProperty("error.confirmation.mail"), principa);
 		}
 
 		usersRepository.insert(newUser);
 
-		return getSiteAccountCreationInfo(Messages.getProperty("success.user.created"), true, userEmail, userPassword,
+		return getSiteAccountCreationInfo(env.getProperty("success.user.created"), true, userEmail, userPassword,
 				principa);
 	}
 

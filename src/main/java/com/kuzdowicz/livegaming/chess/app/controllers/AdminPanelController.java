@@ -10,6 +10,8 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -23,26 +25,29 @@ import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
-import com.kuzdowicz.livegaming.chess.app.props.Messages;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 
 @Controller
+@PropertySource("classpath:messages.properties")
 public class AdminPanelController {
 
-	private UsersRepository usersRepository;
-	private PasswordEncoder passwordEncoder;
 	private static final Logger logger = Logger.getLogger(AdminPanelController.class);
 
+	private final UsersRepository usersRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final Environment env;
+
 	@Autowired
-	public AdminPanelController(UsersRepository usersRepository, PasswordEncoder passwordEncoder) {
+	public AdminPanelController(UsersRepository usersRepository, PasswordEncoder passwordEncoder, Environment env) {
 		this.usersRepository = usersRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.env = env;
 	}
 
 	@RequestMapping(value = "admin/users", method = RequestMethod.GET)
 	public ModelAndView getAllUsers(Principal principal) {
 
-		logger.info("getAllUsers()");
+		logger.debug("getAllUsers()");
 		List<UserAccount> users = usersRepository.findAll();
 
 		ModelAndView usersPage = new ModelAndView("users");
@@ -56,7 +61,7 @@ public class AdminPanelController {
 	public ModelAndView showEditUserForm(@RequestParam("login") String login, String errorMessage,
 			String successMessage, Principal principal) {
 
-		logger.info("showEditUserForm()");
+		logger.debug("showEditUserForm()");
 		UserAccount user = usersRepository.findOneByUsername(login);
 
 		ModelAndView userDetailPage = new ModelAndView("editUser");
@@ -74,7 +79,7 @@ public class AdminPanelController {
 	public ModelAndView sendEditUserData(@Valid @ModelAttribute("editForm") EditForm editForm, BindingResult result,
 			Principal principal) {
 
-		logger.info("sendEditUserData()");
+		logger.debug("sendEditUserData()");
 
 		Boolean changePasswordFlag = editForm.getChangePasswordFlag();
 		Boolean changePasswordCheckBoxIsUnchecked = !changePasswordFlag;
@@ -104,7 +109,7 @@ public class AdminPanelController {
 
 		if (changePasswordFlag && !password.equals(confirmPassword)) {
 
-			return showEditUserForm(userLogin, Messages.getProperty("error.passwords.notequal"), null, principal);
+			return showEditUserForm(userLogin, env.getProperty("error.passwords.notequal"), null, principal);
 		}
 
 		UserAccount user = usersRepository.findOneByUsername(userLogin);
@@ -123,7 +128,7 @@ public class AdminPanelController {
 					String hashedPassword = passwordEncoder.encode(password).toString();
 					user.setPassword(hashedPassword);
 				} catch (Exception e) {
-					logger.debug(e);
+					logger.warn(e);
 				}
 			}
 			user.setEmail(email);
@@ -139,17 +144,17 @@ public class AdminPanelController {
 			user.setEmail(email);
 			usersRepository.save(user);
 
-			return showEditUserForm(user.getUsername(), null, Messages.getProperty("success.user.edit"), principal);
+			return showEditUserForm(user.getUsername(), null, env.getProperty("success.user.edit"), principal);
 
 		} else {
 
-			return showEditUserForm(null, Messages.getProperty("error.fatal.error"), null, principal);
+			return showEditUserForm(null, env.getProperty("error.fatal.error"), null, principal);
 		}
 	}
 
 	@RequestMapping(value = "admin/users/remove", method = RequestMethod.POST)
 	public ModelAndView removeUser(@RequestParam("username") String username, Principal principal) {
-		logger.info("removeUser()");
+		logger.debug("removeUser()");
 
 		UserAccount user = usersRepository.findOneByUsername(username);
 		usersRepository.delete(user);
@@ -159,7 +164,7 @@ public class AdminPanelController {
 
 	@RequestMapping(value = "/admin/users/addUser", method = RequestMethod.GET)
 	public ModelAndView getAddUserForm(String errorMsg, String successMsg, Principal principal) {
-		logger.info("getAddUserForm()");
+		logger.debug("getAddUserForm()");
 
 		ModelAndView addUserPage = new ModelAndView("addUser");
 		addUserPage.addObject("errorMessage", errorMsg);
@@ -191,7 +196,7 @@ public class AdminPanelController {
 		// validation
 		if (!plaintextPassword.equals(confirmPassword)) {
 
-			return getAddUserForm(Messages.getProperty("error.passwords.notequal"), null, principal);
+			return getAddUserForm(env.getProperty("error.passwords.notequal"), null, principal);
 		}
 
 		UserAccount user = new UserAccount();
@@ -207,7 +212,7 @@ public class AdminPanelController {
 			String hashedPassword = passwordEncoder.encode(plaintextPassword);
 			user.setPassword(hashedPassword);
 		} catch (Exception e) {
-			logger.debug(e);
+			logger.warn(e);
 		}
 
 		user.setEmail(email);
@@ -217,7 +222,7 @@ public class AdminPanelController {
 		UserAccount updateResult = usersRepository.insert(user);
 
 		if (updateResult != null) {
-			return getAddUserForm(null, Messages.getProperty("success.user.created"), principal);
+			return getAddUserForm(null, env.getProperty("success.user.created"), principal);
 		} else {
 			return getAddUserForm("login " + userLogin + " allready exists!", null, principal);
 		}

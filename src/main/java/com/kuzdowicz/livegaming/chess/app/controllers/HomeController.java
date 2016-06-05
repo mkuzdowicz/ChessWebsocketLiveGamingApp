@@ -23,8 +23,8 @@ public class HomeController {
 
 	private static final Logger logger = Logger.getLogger(HomeController.class);
 
-	private UsersRepository repository;
-	private Gson gson;
+	private final UsersRepository repository;
+	private final Gson gson;
 
 	@Autowired
 	public HomeController(UsersRepository repository, Gson gson) {

@@ -13,10 +13,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.kuzdowicz.livegaming.chess.app.constants.MailSubject;
-import com.kuzdowicz.livegaming.chess.app.props.ChessAppProperties;
 
 @Service
-@PropertySource("classpath:custom.properties")
+@PropertySource("classpath:messages.properties")
 public class MailService {
 
 	private final static Logger logger = Logger.getLogger(MailService.class);
@@ -33,7 +32,7 @@ public class MailService {
 	private String prepareRegistrationMailText(String randomHashForLink, String username) {
 
 		StringBuilder sb = new StringBuilder();
-		String siteName = ChessAppProperties.getProperty("domain.name");
+		String siteName = env.getProperty("domain.name");
 		sb.append("<html><head><meta http-equiv=\"Content-Type\" ");
 		sb.append("content=\"text/html; charset=UTF-8\"></head><body>");
 		sb.append("<p>");

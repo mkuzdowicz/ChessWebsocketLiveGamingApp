@@ -13,7 +13,7 @@ import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 @Controller
 public class UsersAjaxController {
 
-	private UsersRepository usersRepository;
+	private final UsersRepository usersRepository;
 
 	@Autowired
 	public UsersAjaxController(UsersRepository usersRepository) {
