@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.exceptions.UserAccountNotConfirmed;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 
 @Service
@@ -26,6 +27,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 		if (user == null) {
 			throw new UsernameNotFoundException(username + " login not found");
+		}
+		
+		if(!user.getIsRegistrationConfirmed()){
+			throw new UserAccountNotConfirmed(username + " not confirmed");
 		}
 
 		return new UserDetailsImpl(user);
