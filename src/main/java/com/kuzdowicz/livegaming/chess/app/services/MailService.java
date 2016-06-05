@@ -1,15 +1,13 @@
 package com.kuzdowicz.livegaming.chess.app.services;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -18,31 +16,18 @@ import com.kuzdowicz.livegaming.chess.app.constants.MailSubject;
 import com.kuzdowicz.livegaming.chess.app.props.ChessAppProperties;
 
 @Service
+@PropertySource("classpath:custom.properties")
 public class MailService {
 
-	private final Logger logger = Logger.getLogger(MailService.class);
-	
-	
+	private final static Logger logger = Logger.getLogger(MailService.class);
 
-	private JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+	private final JavaMailSender mailSender;
+	private final Environment env;
 
-	private static Resource resource = new ClassPathResource("/chessApp.properties");
-
-	private void prepareMailSender() {
-
-		Properties properties = new Properties();
-		try {
-			properties = PropertiesLoaderUtils.loadProperties(resource);
-		} catch (IOException e) {
-			logger.debug(e);
-		}
-
-		mailSender.setUsername(properties.getProperty("mail.username"));
-		mailSender.setPassword(properties.getProperty("mail.password"));
-		mailSender.setHost(properties.getProperty("smtp.host"));
-		mailSender.setPort(Integer.parseInt(properties.getProperty("mail.port")));
-		mailSender.setProtocol(properties.getProperty("mail.transport.protocol"));
-		mailSender.setJavaMailProperties(properties);
+	@Autowired
+	public MailService(JavaMailSenderImpl mailSender, Environment env) {
+		this.mailSender = mailSender;
+		this.env = env;
 	}
 
 	private String prepareRegistrationMailText(String randomHashForLink, String username) {
@@ -89,7 +74,7 @@ public class MailService {
 	private String prepareRegistrationAnchor(String hash) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<a href=\"");
-		String domainName = ChessAppProperties.getProperty("domain.link");
+		String domainName = env.getProperty("domain.link");
 		String confirmEmailLink = domainName + "/registration/confirm/" + hash;
 		sb.append(confirmEmailLink);
 		sb.append("\">");
@@ -101,8 +86,6 @@ public class MailService {
 
 	public void sendMail(String to, String from, String subject, String messageContent) {
 		logger.debug("sendMail()");
-
-		prepareMailSender();
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 
@@ -125,19 +108,11 @@ public class MailService {
 
 	public void sendRegistrationMail(String toMailAddress, String username, String randomHashForLink) {
 
-		String fromMailAddress = ChessAppProperties.getProperty("mail.default.message.from");
+		String fromMailAddress = env.getProperty("mail.default.message.from");
 
 		sendMail(toMailAddress, fromMailAddress, MailSubject.REGISTRATION_EN,
 				prepareRegistrationMailText(randomHashForLink, username));
 
 	}
-
-	// for test
-	// public static void main(String[] args) {
-	//
-	// MailService ms = new MailService();
-	// ms.sendRegistrationMail("marcin.kuzdowicz@wp.pl", "test", "test");
-	//
-	// }
 
 }

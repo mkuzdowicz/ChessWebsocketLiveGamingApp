@@ -7,9 +7,11 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,8 @@ import com.kuzdowicz.livegaming.chess.app.services.MailService;
 
 @Controller
 public class SignUpController {
+
+	private final static Logger logger = Logger.getLogger(SignUpController.class);
 
 	private UsersRepository usersRepository;
 	private PasswordEncoder passwordEncoder;
@@ -68,6 +72,7 @@ public class SignUpController {
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
+
 	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpFomr") SignUpForm signUpFomr, BindingResult result,
 			Principal principa) {
 
@@ -78,8 +83,6 @@ public class SignUpController {
 			return signUpSite;
 		}
 
-		String userLogin = signUpFomr.getUsername();
-		String userEmail = signUpFomr.getEmail();
 		String userPassword = signUpFomr.getPassword();
 		String confirmPassword = signUpFomr.getConfirmPassword();
 
@@ -89,6 +92,16 @@ public class SignUpController {
 			return getSignUpForm(signUpFomr, Messages.getProperty("error.passwords.notequal"), principa);
 		}
 
+		return createAccount(signUpFomr, principa);
+
+	}
+
+	@Transactional
+	private ModelAndView createAccount(SignUpForm signUpFomr, Principal principa) {
+
+		String userLogin = signUpFomr.getUsername();
+		String userEmail = signUpFomr.getEmail();
+		String userPassword = signUpFomr.getPassword();
 		String hashPassword = passwordEncoder.encode(userPassword);
 
 		UserAccount newUser = new UserAccount();
@@ -103,19 +116,17 @@ public class SignUpController {
 		newUser.setIsRegistrationConfirmed(false);
 		newUser.setRegistrationDate(new Date());
 
-		UserAccount creationMessage = usersRepository.insert(newUser);
-
-		if (creationMessage == null) {
-
-			return getSignUpForm(signUpFomr, Messages.getProperty("error.login.exists"), principa);
-
+		try {
+			mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
+		} catch (Exception e) {
+			logger.warn(e);
+			return getSignUpForm(signUpFomr, Messages.getProperty("error.confirmation.mail"), principa);
 		}
 
-		mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
+		usersRepository.insert(newUser);
 
 		return getSiteAccountCreationInfo(Messages.getProperty("success.user.created"), true, userEmail, userPassword,
 				principa);
-
 	}
 
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
