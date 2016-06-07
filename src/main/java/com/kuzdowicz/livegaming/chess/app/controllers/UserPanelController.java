@@ -7,7 +7,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -31,7 +32,7 @@ import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 @PropertySource("classpath:messages.properties")
 public class UserPanelController {
 
-	private static final Logger logger = Logger.getLogger(UserPanelController.class);
+	private static final Logger logger = LoggerFactory.getLogger(UserPanelController.class);
 
 	private final UsersRepository usersRepository;
 	private final ChessGamesRepository chessGamesRepository;
@@ -49,8 +50,6 @@ public class UserPanelController {
 
 	@RequestMapping("/user/your-account")
 	public ModelAndView getLoggedInUserDetails(String errorrMessage, String successMessage, Principal principal) {
-
-		logger.debug("getLoggedInUserDetails()");
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String currentUserLogin = auth.getName();
@@ -71,7 +70,6 @@ public class UserPanelController {
 	@RequestMapping(value = "/user/your-account", method = RequestMethod.POST)
 	public ModelAndView sendEditUserDataForUserAccount(@Valid @ModelAttribute("editForm") EditForm editForm,
 			BindingResult result, Principal principal) {
-		logger.debug("sendEditUserDataForUserAccount()");
 
 		Boolean changePasswordFlag = editForm.getChangePasswordFlag();
 		Boolean changePasswordCheckBoxIsUnchecked = !changePasswordFlag;
@@ -118,7 +116,7 @@ public class UserPanelController {
 				String hashedPassword = passwordEncoder.encode(password);
 				user.setPassword(hashedPassword);
 			} catch (Exception e) {
-				logger.debug(e);
+				logger.warn("exception occured: ", e);
 			}
 		}
 		user.setEmail(email);
@@ -129,7 +127,6 @@ public class UserPanelController {
 
 	@RequestMapping(value = "/user/your-chessgames", method = RequestMethod.GET)
 	public ModelAndView userGamesSite(Principal principal) {
-		logger.debug("userGamesSite()");
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userLogin = auth.getName();

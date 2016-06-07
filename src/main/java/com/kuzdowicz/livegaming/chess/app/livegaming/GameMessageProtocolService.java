@@ -4,7 +4,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 @Service
 public class GameMessageProtocolService {
 
-	private final static Logger log = Logger.getLogger(GameMessageProtocolService.class);
+	private final static Logger logger = LoggerFactory.getLogger(GameMessageProtocolService.class);
 
 	private final WebSocketSessionsRepository webSocketSessionsRepository;
 	private final LiveGamingUsersRepository liveGamingUsersRepository;
@@ -46,13 +47,7 @@ public class GameMessageProtocolService {
 
 	public synchronized void proccessMessage(GameMessage messageObj, String messageJsonString) {
 
-		log.info("proccessMessage()");
-		log.info(messageJsonString);
-
 		String messageType = messageObj.getType();
-
-		System.out.println(gson.toJson(messageObj));
-
 		if (messageType.equals(GameMessageType.GAME_HANDSHAKE_INVITATION)) {
 
 			setUserComStatusIsDuringHandshakeSendMsgAndRefresh(messageObj, messageJsonString);
@@ -88,13 +83,13 @@ public class GameMessageProtocolService {
 
 						webSocketSessionsRepository.sendToSession(toUsername, fromUsername, messageJsonString);
 					} else {
-						log.debug(messageObj.getSendFrom()
+						logger.debug(messageObj.getSendFrom()
 								+ " send message to user which he does not play with , ( to user: " + toUsername
 								+ " )");
 					}
 				}
 			} else {
-				log.debug(messageObj.getSendFrom() + " send chess-move but he his not playing with anyone");
+				logger.debug(messageObj.getSendFrom() + " send chess-move but he his not playing with anyone");
 			}
 
 		} else if (messageType.equals(GameMessageType.GAME_OVER) || messageType.equals(GameMessageType.QUIT_GAME)
@@ -110,9 +105,6 @@ public class GameMessageProtocolService {
 			setUserComStatusWaitForNewGameAndRefresh(messageObj);
 
 		} else if (messageType.equals(GameMessageType.USER_CONNECT)) {
-
-			log.info("user " + messageObj.getSendFrom() + " join to participants");
-
 			webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 		}
 
@@ -143,7 +135,6 @@ public class GameMessageProtocolService {
 			user1.setNumberOfGamesPlayed(user1NumberOfGamesPlayed);
 		}
 
-		// save to DB
 		usersRepository.save(user1);
 
 		UserAccount user2 = usersRepository.findOneByUsername(messageObj.getSendTo());
@@ -157,7 +148,6 @@ public class GameMessageProtocolService {
 			user2.setNumberOfGamesPlayed(user2NumberOfGamesPlayed);
 		}
 
-		// save to DB
 		usersRepository.save(user2);
 
 		if (game.getCheckMate() == true) {
@@ -187,29 +177,21 @@ public class GameMessageProtocolService {
 				looserNumberOfLostGames++;
 				looser.setNumberOfWonChessGames(looserNumberOfLostGames);
 			}
-
 			usersRepository.save(looser);
-
 		}
-
 		chessGamesRepository.save(game);
 	}
 
 	private synchronized Boolean userONEPlayWithUserTWO(GameUser fromUser, GameUser toUser) {
-		log.debug("userONEPlayWithUserTWO()");
-
 		if (fromUser != null && toUser != null && fromUser.getPlayNowWithUser().equals(toUser.getUsername())
 				&& toUser.getPlayNowWithUser().equals(fromUser.getUsername())) {
 			return true;
 		} else {
 			return false;
 		}
-
 	}
 
 	private synchronized Boolean isUserPlayingWithAnyUser(GameUser user) {
-		log.debug("isUserPlayingWithAnyUser()");
-
 		if (user != null && user.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)
 				&& user.getPlayNowWithUser() != null && !user.getPlayNowWithUser().equals("")) {
 			return true;
@@ -220,8 +202,6 @@ public class GameMessageProtocolService {
 
 	private synchronized void setUserComStatusIsDuringHandshakeSendMsgAndRefresh(GameMessage messageObj,
 			String messageJsonString) {
-		log.debug("setUserComStatusIsDuringHandshakeAndRefresh()");
-
 		GameUser invitedUser = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
 
 		if (invitedUser != null
@@ -242,7 +222,7 @@ public class GameMessageProtocolService {
 
 			webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 		} else {
-			log.debug("invited user is already playing, is during handshake or is null");
+			logger.debug("invited user is already playing, is during handshake or is null");
 
 			GameMessage tryLaterMsg = new GameMessage();
 			tryLaterMsg.setType(GameMessageType.TRY_LATER);
@@ -253,7 +233,6 @@ public class GameMessageProtocolService {
 	}
 
 	private synchronized void setUserComStatusIsPlayingAndRefresh(GameMessage messageObj) {
-		log.debug("setUserComStatusIsPlayingAndRefresh()");
 
 		String actualChessGameUUID = UUID.randomUUID().toString();
 
@@ -284,7 +263,6 @@ public class GameMessageProtocolService {
 
 	private synchronized ChessGame prepareAndReturnChessGameObjectAtGameStart(String actualChessGameUUID,
 			GameUser sendToObj, GameUser sendFromObj, GameMessage messageObj) {
-		log.debug("prepareAndReturnChessGameObjectAtGameStart()");
 
 		ChessGame chessGame = new ChessGame();
 		chessGame.setUniqueGameHash(actualChessGameUUID);
@@ -305,19 +283,14 @@ public class GameMessageProtocolService {
 	}
 
 	private synchronized void setUserComStatusWaitForNewGameAndRefresh(GameMessage messageObj) {
-		log.debug("setUserComStatusWaitForNewGameAndRefresh()");
 
 		liveGamingUsersRepository.setComStatusWaitForNewGame(messageObj.getSendFrom());
 		liveGamingUsersRepository.setComStatusWaitForNewGame(messageObj.getSendTo());
 		liveGamingUsersRepository.setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
-
 		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 	}
 
 	private synchronized void sendMessageToOneUser(GameMessage message, String content) {
-		log.debug("sendMessageToOneUser()");
-		log.debug("typ wiadomosci : " + message.getType());
-		log.debug("od usera " + message.getSendFrom() + " do usera " + message.getSendTo());
 
 		String toUsername = message.getSendTo();
 		String fromUsername = message.getSendFrom();

@@ -22,7 +22,6 @@ public class UsersAjaxController {
 
 	@RequestMapping(value = "user/get-user-info-by-username", method = RequestMethod.GET)
 	public @ResponseBody UserAccount getUserInfoByUsername(@RequestParam("username") String username) {
-
 		return usersRepository.findOneByUsername(username);
 	}
 

@@ -7,7 +7,8 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -30,7 +31,7 @@ import com.kuzdowicz.livegaming.chess.app.services.MailService;
 @PropertySource("classpath:messages.properties")
 public class SignUpController {
 
-	private final static Logger logger = Logger.getLogger(SignUpController.class);
+	private final static Logger logger = LoggerFactory.getLogger(SignUpController.class);
 
 	private final UsersRepository usersRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -46,7 +47,6 @@ public class SignUpController {
 		this.env = env;
 	}
 
-	// sign in
 	@RequestMapping("/signup")
 	public ModelAndView getSignUpForm(SignUpForm signUpFomr, String msg, Principal principa) {
 
@@ -73,11 +73,9 @@ public class SignUpController {
 		addBasicObjectsToModelAndView(accountCreationInfo, principa);
 
 		return accountCreationInfo;
-
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-
 	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpFomr") SignUpForm signUpFomr, BindingResult result,
 			Principal principa) {
 
@@ -91,14 +89,10 @@ public class SignUpController {
 		String userPassword = signUpFomr.getPassword();
 		String confirmPassword = signUpFomr.getConfirmPassword();
 
-		// validation
 		if (!userPassword.equals(confirmPassword)) {
-
 			return getSignUpForm(signUpFomr, env.getProperty("error.passwords.notequal"), principa);
 		}
-
 		return createAccount(signUpFomr, principa);
-
 	}
 
 	@Transactional
@@ -124,12 +118,11 @@ public class SignUpController {
 		try {
 			mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
 		} catch (Exception e) {
-			logger.warn(e);
+			logger.warn("exception occured: ", e);
 			return getSignUpForm(signUpFomr, env.getProperty("error.confirmation.mail"), principa);
 		}
 
 		usersRepository.insert(newUser);
-
 		return getSiteAccountCreationInfo(env.getProperty("success.user.created"), true, userEmail, userPassword,
 				principa);
 	}
@@ -137,7 +130,6 @@ public class SignUpController {
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
 		mav.addObject("currentUserName",
 				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
-
 	}
 
 }

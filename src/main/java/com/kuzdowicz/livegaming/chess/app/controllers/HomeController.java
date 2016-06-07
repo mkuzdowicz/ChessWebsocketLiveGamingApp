@@ -4,7 +4,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +20,6 @@ import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 @Controller
 public class HomeController {
 
-	private static final Logger logger = Logger.getLogger(HomeController.class);
-
 	private final UsersRepository repository;
 	private final Gson gson;
 
@@ -34,7 +31,6 @@ public class HomeController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView home(Principal principal) {
-		logger.info("homePage()");
 
 		ModelAndView homePageModel = new ModelAndView("home");
 		addBasicObjectsToModelAndView(homePageModel, principal);
@@ -44,7 +40,6 @@ public class HomeController {
 
 	@RequestMapping(value = "/home/best-players", method = RequestMethod.GET)
 	public ModelAndView bestPlayersSite(Principal principal) {
-		logger.info("bestPlayersSite()");
 
 		ModelAndView bestPlayers = new ModelAndView("bestPlayers");
 		addBasicObjectsToModelAndView(bestPlayers, principal);

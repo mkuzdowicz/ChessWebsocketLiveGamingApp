@@ -3,7 +3,8 @@ package com.kuzdowicz.livegaming.chess.app.services;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -18,7 +19,7 @@ import com.kuzdowicz.livegaming.chess.app.constants.MailSubject;
 @PropertySource("classpath:messages.properties")
 public class MailService {
 
-	private final static Logger logger = Logger.getLogger(MailService.class);
+	private final static Logger logger = LoggerFactory.getLogger(MailService.class);
 
 	private final JavaMailSender mailSender;
 	private final Environment env;
@@ -79,7 +80,6 @@ public class MailService {
 		sb.append("\">");
 		sb.append("click here to confirm your account");
 		sb.append("</a>");
-		System.out.println(sb.toString());
 		return sb.toString();
 	}
 
@@ -97,7 +97,7 @@ public class MailService {
 			mimeMessage.setContent(messageContent, "text/html; charset=utf-8");
 
 		} catch (Exception e) {
-			logger.debug(e);
+			logger.warn("Exception: ", e);
 		}
 
 		mailSender.send(mimeMessage);

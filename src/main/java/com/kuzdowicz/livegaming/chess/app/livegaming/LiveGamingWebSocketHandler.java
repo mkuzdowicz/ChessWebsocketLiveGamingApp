@@ -1,6 +1,7 @@
 package com.kuzdowicz.livegaming.chess.app.livegaming;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -17,7 +18,7 @@ import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameUser;
 @Component
 public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
-	private final static Logger log = Logger.getLogger(LiveGamingWebSocketHandler.class);
+	private final static Logger log = LoggerFactory.getLogger(LiveGamingWebSocketHandler.class);
 
 	private final WebSocketSessionsRepository webSocketSessionsRepository;
 	private final LiveGamingUsersRepository liveGamingUsersRepository;
@@ -36,9 +37,6 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-
-		log.debug("afterConnectionEstablished()");
-
 		String connectionUriPath = session.getUri().getPath();
 		String[] connUriSpliietdBySlash = connectionUriPath.split("/");
 		String sender = connUriSpliietdBySlash[connUriSpliietdBySlash.length - 1];
@@ -57,19 +55,15 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-
 		String msg = message.getPayload();
 		GameMessage gameMessage = gson.fromJson(msg, GameMessage.class);
 		gameMessageProtocol.proccessMessage(gameMessage, msg);
-
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-		log.debug("afterConnectionClosed()");
 
 		String sender = session.getAttributes().get("username").toString();
-
 		synchronized (this) {
 			GameUser cloesingConnectionUser = liveGamingUsersRepository.getWebsocketUser(sender);
 
@@ -93,13 +87,11 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 			webSocketSessionsRepository.removeSession(sender);
 		}
 		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
-
 	}
 
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-		log.debug("there was an error with connection");
-		log.warn(exception);
+		log.warn("there was an error with connection: ", exception);
 	}
 
 }

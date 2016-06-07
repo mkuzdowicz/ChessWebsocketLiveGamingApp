@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
@@ -15,7 +16,7 @@ import com.google.gson.Gson;
 @Component
 public class WebSocketSessionsRepository {
 
-	private final static Logger logger = Logger.getLogger(WebSocketSessionsRepository.class);
+	private final static Logger logger = LoggerFactory.getLogger(WebSocketSessionsRepository.class);
 
 	protected volatile static Map<String, WebSocketSession> sessionsMap = new ConcurrentHashMap<>();
 
@@ -44,7 +45,7 @@ public class WebSocketSessionsRepository {
 				TextMessage tm = new TextMessage(jsonUsersList.getBytes());
 				userSession.sendMessage(tm);
 			} catch (IOException e) {
-				logger.warn(e);
+				logger.warn("exception occured: ", e);
 			}
 		}
 	}
@@ -62,7 +63,7 @@ public class WebSocketSessionsRepository {
 				}
 			}
 		} catch (Exception e) {
-			logger.warn(e);
+			logger.warn("exception occured: ", e);
 		}
 	}
 
@@ -73,7 +74,7 @@ public class WebSocketSessionsRepository {
 				TextMessage tm = new TextMessage(message.getBytes());
 				userSession.sendMessage(tm);
 			} catch (IOException e) {
-				logger.warn(e);
+				logger.warn("exception occured: ", e);
 			}
 		}
 

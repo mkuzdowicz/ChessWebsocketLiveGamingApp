@@ -8,7 +8,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -31,7 +32,7 @@ import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 @PropertySource("classpath:messages.properties")
 public class AdminPanelController {
 
-	private static final Logger logger = Logger.getLogger(AdminPanelController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AdminPanelController.class);
 
 	private final UsersRepository usersRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -47,7 +48,6 @@ public class AdminPanelController {
 	@RequestMapping(value = "admin/users", method = RequestMethod.GET)
 	public ModelAndView getAllUsers(Principal principal) {
 
-		logger.debug("getAllUsers()");
 		List<UserAccount> users = usersRepository.findAll();
 
 		ModelAndView usersPage = new ModelAndView("users");
@@ -61,7 +61,6 @@ public class AdminPanelController {
 	public ModelAndView showEditUserForm(@RequestParam("login") String login, String errorMessage,
 			String successMessage, Principal principal) {
 
-		logger.debug("showEditUserForm()");
 		UserAccount user = usersRepository.findOneByUsername(login);
 
 		ModelAndView userDetailPage = new ModelAndView("editUser");
@@ -78,8 +77,6 @@ public class AdminPanelController {
 	@RequestMapping(value = "admin/users/editUser", method = RequestMethod.POST)
 	public ModelAndView sendEditUserData(@Valid @ModelAttribute("editForm") EditForm editForm, BindingResult result,
 			Principal principal) {
-
-		logger.debug("sendEditUserData()");
 
 		Boolean changePasswordFlag = editForm.getChangePasswordFlag();
 		Boolean changePasswordCheckBoxIsUnchecked = !changePasswordFlag;
@@ -128,7 +125,7 @@ public class AdminPanelController {
 					String hashedPassword = passwordEncoder.encode(password).toString();
 					user.setPassword(hashedPassword);
 				} catch (Exception e) {
-					logger.warn(e);
+					logger.warn("exception occured: ", e);
 				}
 			}
 			user.setEmail(email);
@@ -212,7 +209,7 @@ public class AdminPanelController {
 			String hashedPassword = passwordEncoder.encode(plaintextPassword);
 			user.setPassword(hashedPassword);
 		} catch (Exception e) {
-			logger.warn(e);
+			logger.warn("exception occured: ", e);
 		}
 
 		user.setEmail(email);
