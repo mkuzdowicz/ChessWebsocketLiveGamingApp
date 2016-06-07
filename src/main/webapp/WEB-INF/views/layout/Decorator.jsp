@@ -57,16 +57,18 @@
 				<li><a href="/user/your-chessgames">your-games-history</a></li>
 			</security:authorize>
 			<li><a href="/home/best-players">best-players</a></li>
-
-			<li class="pull-right logOutBtn ">
-				<form class="form-inline" action="/logout"
-					method="post">
-					<input type="hidden" name="${_csrf.parameterName}"
-						value="${_csrf.token}" />
-					<button class="btn btn-default navbar-btn" type="submit">logout</button>
-				</form> <security:authorize access="isAnonymous()">
-					<li class="pull-right logInBtn"><a href="/login">log in</a></li>
-				</security:authorize>
+			<security:authorize access="!isAnonymous()">
+				<li class="pull-right logOutBtn ">
+					<form class="form-inline" action="/logout" method="post">
+						<input type="hidden" name="${_csrf.parameterName}"
+							value="${_csrf.token}" />
+						<button class="btn navbar-btn" type="submit">logout</button>
+					</form>
+				</li>
+			</security:authorize>
+			<security:authorize access="isAnonymous()">
+				<li class="pull-right logInBtn"><a href="/login">log in</a></li>
+			</security:authorize>
 		</ul>
 		<div class="welcome-user-line">
 			<div class="col-md-8">

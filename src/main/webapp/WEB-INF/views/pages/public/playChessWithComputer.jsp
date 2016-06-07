@@ -28,6 +28,6 @@
 
 </div>
 <!-- IMPORT CHESS SCRIPT -->
-<script type="text/javascript" src="/js/chessUserVsComputer.js">
+<script type="text/javascript" src="/js/pages_scripts/chessUserVsComputer.js">
 	
 </script>

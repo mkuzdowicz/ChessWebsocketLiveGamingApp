@@ -56,7 +56,7 @@ public class UserPanelController {
 
 		UserAccount user = usersRepository.findOneByUsername(currentUserLogin);
 
-		ModelAndView yourAccount = new ModelAndView("yourAccount");
+		ModelAndView yourAccount = new ModelAndView("pages/user/yourAccount");
 		EditForm editForm = new EditForm();
 		yourAccount.addObject("editForm", editForm);
 		yourAccount.addObject("user", user);
@@ -75,14 +75,14 @@ public class UserPanelController {
 		Boolean changePasswordCheckBoxIsUnchecked = !changePasswordFlag;
 		if (changePasswordCheckBoxIsUnchecked) {
 			if (result.hasFieldErrors("email") || result.hasFieldErrors("name") || result.hasFieldErrors("lastname")) {
-				ModelAndView editFormSite = new ModelAndView("yourAccount");
+				ModelAndView editFormSite = new ModelAndView("pages/user/yourAccount");
 				editFormSite.addObject("changePasswordCheckBoxIsChecked", changePasswordFlag);
 				editFormSite.addObject("editForm", editForm);
 				return editFormSite;
 			}
 		} else {
 			if (result.hasErrors()) {
-				ModelAndView editFormSite = new ModelAndView("yourAccount");
+				ModelAndView editFormSite = new ModelAndView("pages/user/yourAccount");
 				editFormSite.addObject("changePasswordCheckBoxIsChecked", changePasswordFlag);
 				editFormSite.addObject("editForm", editForm);
 				return editFormSite;
@@ -131,7 +131,7 @@ public class UserPanelController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userLogin = auth.getName();
 
-		ModelAndView userGamesSite = new ModelAndView("userGames");
+		ModelAndView userGamesSite = new ModelAndView("pages/user/userGames");
 		addBasicObjectsToModelAndView(userGamesSite, principal);
 		List<ChessGame> userChessGames = chessGamesRepository.findAllByWhitePlayerNameOrBlackPlayerName(userLogin);
 

@@ -31,6 +31,6 @@
 </div>
 <script type="text/javascript" src="<c:url value="/js/lib/chess.js" />"></script>
 <!-- IMPORT CHESS SCRIPT -->
-<script type="text/javascript" src="/js/chessComputerVsComputer.js"></script>
+<script type="text/javascript" src="/js/pages_scripts/chessComputerVsComputer.js"></script>
 
 

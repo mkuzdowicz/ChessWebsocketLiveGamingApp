@@ -26,25 +26,21 @@ public class LoginController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView getLoginPage(LoginForm loginForm, Principal principal) {
-		ModelAndView loginPageModel = new ModelAndView("login");
+		ModelAndView loginPageModel = new ModelAndView("pages/public/login");
 		loginPageModel.addObject("loginForm", loginForm);
 		addBasicObjectsToModelAndView(loginPageModel, principal);
-
 		return loginPageModel;
 	}
 
 	@RequestMapping("/fail")
 	public ModelAndView getFailPage() {
-		ModelAndView errorPage = new ModelAndView("error");
+		ModelAndView errorPage = new ModelAndView("pages/public/error");
 		errorPage.addObject("errorMessage", env.getProperty("error.loginfailed"));
 		return errorPage;
-
 	}
 
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
 		mav.addObject("currentUserName",
 				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
-
 	}
-
 }

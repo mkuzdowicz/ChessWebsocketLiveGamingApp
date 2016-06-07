@@ -34,12 +34,12 @@ public class RegistrationConfirmationController {
 			user.setRegistrationHashString("");
 			usersRepository.save(user);
 		} else {
-			ModelAndView error = new ModelAndView("error");
+			ModelAndView error = new ModelAndView("pages/public/error");
 			error.addObject("errorMessage", env.getProperty("error.registration.confirm.failed"));
 			return error;
 		}
 
-		ModelAndView confirmRegistrationMsg = new ModelAndView("confirmRegistrationMessage");
+		ModelAndView confirmRegistrationMsg = new ModelAndView("pages/public/confirmRegistrationMessage");
 		confirmRegistrationMsg.addObject("username", user.getUsername());
 		return confirmRegistrationMsg;
 	}

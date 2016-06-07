@@ -13,14 +13,14 @@ public class PlayChessSitesController {
 
 	@RequestMapping(value = "/play-chess-with-computer", method = RequestMethod.GET)
 	public ModelAndView playChessWithComputer(Principal principal) {
-		ModelAndView playChessWithCompPageModel = new ModelAndView("playChessWithComputer");
+		ModelAndView playChessWithCompPageModel = new ModelAndView("pages/public/playChessWithComputer");
 		addBasicObjectsToModelAndView(playChessWithCompPageModel, principal);
 		return playChessWithCompPageModel;
 	}
 
 	@RequestMapping(value = "/play-chess-with-user", method = RequestMethod.GET)
 	public ModelAndView playChessWithUser(Principal principal) {
-		ModelAndView playChessWithUserPageModel = new ModelAndView("playChessWithUser");
+		ModelAndView playChessWithUserPageModel = new ModelAndView("pages/user/playChessWithUser");
 		addBasicObjectsToModelAndView(playChessWithUserPageModel, principal);
 		return playChessWithUserPageModel;
 	}

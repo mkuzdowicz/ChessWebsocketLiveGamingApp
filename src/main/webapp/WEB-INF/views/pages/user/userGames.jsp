@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <div class="main-wrapper">
-	<script src="<c:url value="/js/userGamesHistory.js" />"></script>
+	<script src="<c:url value="/js/pages_scripts/userGamesHistory.js" />"></script>
 
 	<div id="user-games-stats" class="text-center nice-green-backgroud">
 		<table class="table table-condensed">

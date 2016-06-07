@@ -104,26 +104,29 @@
 	</script>
 
 	<!-- Main -->
-	<script type="text/javascript" src="/js/playChessWithUserMain.js"></script>
+	<script type="text/javascript"
+		src="/js/livegaming/playChessWithUserMain.js"></script>
 
 	<!-- IMPORT WEBSOCKET CLIENT ENDPOINT SCRIPT -->
-	<script type="text/javascript" src="/js/websocketClientEndpoint.js">
+	<script type="text/javascript"
+		src="/js/livegaming/websocketClientEndpoint.js">
 		
 	</script>
 
 	<!-- IMPORT WEBSOCKET CLIENT MESSAGE PROTOCOL -->
 	<script type="text/javascript"
-		src="/js/wsClientMessageExchangeProtocol.js">
+		src="/js/livegaming/wsClientMessageExchangeProtocol.js">
 		
 	</script>
 
 	<!-- IMPORT WEBSOCKET CLIENT ENDPOINT FUNCTIONS -->
-	<script type="text/javascript" src="/js/wsClientEndpointFunctions.js">
+	<script type="text/javascript"
+		src="/js/livegaming/wsClientEndpointFunctions.js">
 		
 	</script>
 
 	<!-- IMPORT CHESS LOGIC SCRIPT -->
-	<script type="text/javascript" src="/js/chessUserVsUser.js">
+	<script type="text/javascript" src="/js/livegaming/chessUserVsUser.js">
 		
 	</script>
 </security:authorize>

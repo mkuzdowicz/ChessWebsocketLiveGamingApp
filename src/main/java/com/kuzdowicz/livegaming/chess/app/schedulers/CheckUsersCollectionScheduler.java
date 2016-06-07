@@ -55,7 +55,7 @@ public class CheckUsersCollectionScheduler {
 	}
 
 	public static boolean isNotConfirmedAccountDeprecated(Date registrationDate) {
-		Integer ONE_WEEK_PLUS_ONE_DAY = 1;
+		Integer ONE_WEEK_PLUS_ONE_DAY = 8;
 		DateTime currentDate = DateTime.now();
 		DateTime userRegistrationDateTime = new DateTime(registrationDate);
 		Integer numberOfDays = Days.daysBetween(userRegistrationDateTime, currentDate).getDays();

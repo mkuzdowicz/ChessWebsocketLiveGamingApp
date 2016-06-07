@@ -49,11 +49,9 @@ public class AdminPanelController {
 	public ModelAndView getAllUsers(Principal principal) {
 
 		List<UserAccount> users = usersRepository.findAll();
-
-		ModelAndView usersPage = new ModelAndView("users");
+		ModelAndView usersPage = new ModelAndView("pages/admin/users");
 		usersPage.addObject("users", users);
 		addBasicObjectsToModelAndView(usersPage, principal);
-
 		return usersPage;
 	}
 
@@ -63,14 +61,13 @@ public class AdminPanelController {
 
 		UserAccount user = usersRepository.findOneByUsername(login);
 
-		ModelAndView userDetailPage = new ModelAndView("editUser");
+		ModelAndView userDetailPage = new ModelAndView("pages/admin/editUser");
 		EditForm editForm = new EditForm();
 		userDetailPage.addObject("editForm", editForm);
 		userDetailPage.addObject("user", user);
 		userDetailPage.addObject("errorMessage", errorMessage);
 		userDetailPage.addObject("successMessage", successMessage);
 		addBasicObjectsToModelAndView(userDetailPage, principal);
-
 		return userDetailPage;
 	}
 
@@ -80,16 +77,15 @@ public class AdminPanelController {
 
 		Boolean changePasswordFlag = editForm.getChangePasswordFlag();
 		Boolean changePasswordCheckBoxIsUnchecked = !changePasswordFlag;
+		ModelAndView editFormSite = new ModelAndView("pages/admin/editUser");
 		if (changePasswordCheckBoxIsUnchecked) {
 			if (result.hasFieldErrors("email") || result.hasFieldErrors("name") || result.hasFieldErrors("lastname")) {
-				ModelAndView editFormSite = new ModelAndView("editUser");
 				editFormSite.addObject("changePasswordCheckBoxIsChecked", changePasswordFlag);
 				editFormSite.addObject("editForm", editForm);
 				return editFormSite;
 			}
 		} else {
 			if (result.hasErrors()) {
-				ModelAndView editFormSite = new ModelAndView("editUser");
 				editFormSite.addObject("changePasswordCheckBoxIsChecked", changePasswordFlag);
 				editFormSite.addObject("editForm", editForm);
 				return editFormSite;
@@ -163,7 +159,7 @@ public class AdminPanelController {
 	public ModelAndView getAddUserForm(String errorMsg, String successMsg, Principal principal) {
 		logger.debug("getAddUserForm()");
 
-		ModelAndView addUserPage = new ModelAndView("addUser");
+		ModelAndView addUserPage = new ModelAndView("pages/admin/addUser");
 		addUserPage.addObject("errorMessage", errorMsg);
 		addUserPage.addObject("successMsg", successMsg);
 		SignUpForm signUpForm = new SignUpForm();
@@ -179,7 +175,7 @@ public class AdminPanelController {
 		logger.debug("addUser()");
 
 		if (result.hasErrors()) {
-			ModelAndView addUserPage = new ModelAndView("addUser");
+			ModelAndView addUserPage = new ModelAndView("pages/admin/addUser");
 			addUserPage.addObject("signUpForm", signUpForm);
 			return addUserPage;
 		}
@@ -229,7 +225,6 @@ public class AdminPanelController {
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
 		mav.addObject("currentUserName",
 				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
-
 	}
 
 }

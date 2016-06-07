@@ -19,6 +19,6 @@
 	<script type="text/javascript">
 		var USERS_JSON_ARR = JSON.parse('${usersJson}');
 	</script>
-	<script src="<c:url value="/js/bestPlayersMain.js" />"></script>
+	<script src="<c:url value="/js/pages_scripts/bestPlayersMain.js" />"></script>
 
 </div>

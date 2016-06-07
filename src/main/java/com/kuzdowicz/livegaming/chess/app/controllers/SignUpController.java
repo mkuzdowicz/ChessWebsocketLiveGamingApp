@@ -50,7 +50,7 @@ public class SignUpController {
 	@RequestMapping("/signup")
 	public ModelAndView getSignUpForm(SignUpForm signUpFomr, String msg, Principal principa) {
 
-		ModelAndView signUpSite = new ModelAndView("signup");
+		ModelAndView signUpSite = new ModelAndView("pages/public/signup");
 		if (msg != null) {
 			signUpSite.addObject("errorMessage", msg);
 		}
@@ -64,7 +64,7 @@ public class SignUpController {
 	public ModelAndView getSiteAccountCreationInfo(String userCreationMsg, boolean created, String userMail,
 			String userPassword, Principal principa) {
 
-		ModelAndView accountCreationInfo = new ModelAndView("creatAccountMessage");
+		ModelAndView accountCreationInfo = new ModelAndView("pages/public/creatAccountMessage");
 		accountCreationInfo.addObject("msg", userCreationMsg);
 		accountCreationInfo.addObject("created", created);
 		if (created) {
@@ -80,12 +80,10 @@ public class SignUpController {
 			Principal principa) {
 
 		if (result.hasErrors()) {
-
-			ModelAndView signUpSite = new ModelAndView("signup");
+			ModelAndView signUpSite = new ModelAndView("pages/public/signup");
 			signUpSite.addObject("signUpFomr", signUpFomr);
 			return signUpSite;
 		}
-
 		String userPassword = signUpFomr.getPassword();
 		String confirmPassword = signUpFomr.getConfirmPassword();
 

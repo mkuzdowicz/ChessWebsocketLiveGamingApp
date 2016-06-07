@@ -32,7 +32,7 @@ public class HomeController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView home(Principal principal) {
 
-		ModelAndView homePageModel = new ModelAndView("home");
+		ModelAndView homePageModel = new ModelAndView("pages/public/home");
 		addBasicObjectsToModelAndView(homePageModel, principal);
 
 		return homePageModel;
@@ -41,7 +41,7 @@ public class HomeController {
 	@RequestMapping(value = "/home/best-players", method = RequestMethod.GET)
 	public ModelAndView bestPlayersSite(Principal principal) {
 
-		ModelAndView bestPlayers = new ModelAndView("bestPlayers");
+		ModelAndView bestPlayers = new ModelAndView("pages/public/bestPlayers");
 		addBasicObjectsToModelAndView(bestPlayers, principal);
 		Pageable p = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "numberOfWonChessGames"));
 		List<UserAccount> bestPlayingUsers = repository.findAllWhereNumberOfWonChessGamesGt0(p);
