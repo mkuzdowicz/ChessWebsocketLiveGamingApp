@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kuzdowicz.livegaming.chess.app.constants.FormActionMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
@@ -44,7 +45,7 @@ public class AdminPanelController {
 		this.env = env;
 	}
 
-	@RequestMapping(value = "admin/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/admin/users", method = RequestMethod.GET)
 	public ModelAndView getAllUsers(Principal principal) {
 		ModelAndView usersPage = new ModelAndView("pages/admin/users");
 		usersPage.addObject("users", usersRepository.findAll());
@@ -52,30 +53,46 @@ public class AdminPanelController {
 		return usersPage;
 	}
 
-	@RequestMapping(value = "admin/users/editUser", method = RequestMethod.GET)
-	public ModelAndView showEditUserForm(@RequestParam("login") String login, EditForm editForm,
+	@RequestMapping(value = "/admin/users/show-edit-form", method = RequestMethod.POST)
+	public ModelAndView showEditUserForm(@RequestParam("userId") String userId, EditForm editForm,
 			FormActionResultMsgDto formActionMsg, Principal principal) {
 
-		UserAccount user = usersRepository.findOneByUsername(login);
+		UserAccount user = usersRepository.findOne(userId);
 		ModelAndView userDetailPage = new ModelAndView("pages/admin/editUser");
+		bindUserObjectToEditFormDto(user, editForm);
 		userDetailPage.addObject("editForm", editForm);
-		userDetailPage.addObject("user", user);
 		userDetailPage.addObject("formActionMsg", formActionMsg);
+		userDetailPage.addObject("editUserActionUrl", "admin/users/editUser");
 		addBasicObjectsToModelAndView(userDetailPage, principal);
 		return userDetailPage;
 	}
 
-	@RequestMapping(value = "admin/users/editUser", method = RequestMethod.POST)
+	private void bindUserObjectToEditFormDto(UserAccount user, EditForm editForm) {
+		if (user == null || editForm == null) {
+			return;
+		}
+		editForm.setUsername(user.getUsername());
+		editForm.setUserId(user.getId());
+		editForm.setEmail(user.getEmail());
+		editForm.setName(user.getName());
+		editForm.setLastname(user.getLastname());
+		editForm.setAccountConfirmed(user.getIsRegistrationConfirmed());
+		editForm.setGrantAdminAuthorities(user.getRole() == UserRoles.ADMIN.geNumericValue() ? true : false);
+	}
+
+	@RequestMapping(value = "/admin/users/edit-user", method = RequestMethod.POST)
 	public ModelAndView sendEditUserData(@Valid @ModelAttribute("editForm") EditForm editForm, BindingResult result,
 			Principal principal) {
 
 		String password = editForm.getPassword();
 		String confirmPassword = editForm.getConfirmPassword();
-		String userLogin = editForm.getUsername();
 		String name = editForm.getName();
 		String lastname = editForm.getLastname();
 		String email = editForm.getEmail();
 		Boolean adminFlag = editForm.getGrantAdminAuthorities();
+		Boolean accountConfirmed = editForm.getAccountConfirmed();
+		String userId = editForm.getUserId();
+		String userLogin = editForm.getUsername();
 
 		Boolean changePasswordFlag = editForm.getChangePasswordFlag();
 		ModelAndView editFormSite = new ModelAndView("pages/admin/editUser");
@@ -98,7 +115,7 @@ public class AdminPanelController {
 			return editFormSite;
 		}
 
-		UserAccount user = usersRepository.findOneByUsername(userLogin);
+		UserAccount user = usersRepository.findOne(userId);
 		if (user == null) {
 			return showEditUserForm(null, new EditForm(),
 					FormActionResultMsgDto.createErrorMsg(env.getProperty("error.fatal.error")), principal);
@@ -110,7 +127,8 @@ public class AdminPanelController {
 		}
 		user.setEmail(email);
 		user.setRole(adminFlag ? UserRoles.ADMIN.geNumericValue() : UserRoles.USER.geNumericValue());
-		
+		user.setIsRegistrationConfirmed(accountConfirmed);
+
 		usersRepository.save(user);
 
 		return showEditUserForm(user.getUsername(), editForm,
@@ -118,11 +136,11 @@ public class AdminPanelController {
 
 	}
 
-	@RequestMapping(value = "admin/users/remove", method = RequestMethod.POST)
-	public ModelAndView removeUser(@RequestParam("username") String username, Principal principal) {
+	@RequestMapping(value = "/admin/users/remove", method = RequestMethod.POST)
+	public ModelAndView removeUser(@RequestParam("userId") String userId, Principal principal) {
 		logger.debug("removeUser()");
 
-		UserAccount user = usersRepository.findOneByUsername(username);
+		UserAccount user = usersRepository.findOne(userId);
 		usersRepository.delete(user);
 		return getAllUsers(principal);
 	}
@@ -140,7 +158,7 @@ public class AdminPanelController {
 		return addUserPage;
 	}
 
-	@RequestMapping(value = "admin/users/addUser", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/users/addUser", method = RequestMethod.POST)
 	public ModelAndView addUser(@Valid @ModelAttribute("signUpForm") SignUpForm signUpForm, BindingResult result,
 			Principal principal) {
 		logger.debug("addUser()");
@@ -193,6 +211,8 @@ public class AdminPanelController {
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
 		mav.addObject("currentUserName",
 				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
+		mav.addObject("errorMsg", FormActionMessageType.ERROR);
+		mav.addObject("successMsg", FormActionMessageType.SUCCESS);
 	}
 
 }

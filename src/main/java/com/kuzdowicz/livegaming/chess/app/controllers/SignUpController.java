@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kuzdowicz.livegaming.chess.app.constants.UserCreatedStatus;
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
@@ -87,8 +88,8 @@ public class SignUpController {
 			return getSignUpForm(signUpFomr, formActionMsg, principa);
 		}
 
-		int status = createAccount(signUpFomr, principa);
-		if (status == -1) {
+		int creationStatus = createAccount(signUpFomr, principa);
+		if (creationStatus == UserCreatedStatus.FAIL) {
 			FormActionResultMsgDto formActionMsg = FormActionResultMsgDto
 					.createErrorMsg(env.getProperty("error.confirmation.mail"));
 			return getSignUpForm(signUpFomr, formActionMsg, principa);
@@ -123,11 +124,11 @@ public class SignUpController {
 			mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
 		} catch (Exception e) {
 			logger.warn("exception occured: ", e);
-			return -1;
+			return UserCreatedStatus.FAIL;
 		}
 
 		usersRepository.insert(newUser);
-		return 1;
+		return UserCreatedStatus.CREATED;
 	}
 
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {

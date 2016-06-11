@@ -34,7 +34,7 @@ public class LoginController {
 
 	@RequestMapping("/fail")
 	public ModelAndView getFailPage() {
-		ModelAndView errorPage = new ModelAndView("pages/public/error");
+		ModelAndView errorPage = new ModelAndView("pages/public/loginFail");
 		errorPage.addObject("errorMessage",  env.getProperty("error.loginfailed"));
 		return errorPage;
 	}

@@ -50,12 +50,17 @@
 		</div>
 	</div>
 
-	<c:if test="${errorMessage ne null}">
-		<h2 class="alert alert-danger text-center">${errorMessage}</h2>
+	<c:if test="${ formActionMsg ne null }">
+		<div class="form-group col-sm-12">
+			<c:if test="${ formActionMsg.type eq errorMsg }">
+				<div class="alert alert-danger text-center">${formActionMsg.body}</div>
+			</c:if>
+			<c:if test="${ formActionMsg.type eq successMsg }">
+				<div class="alert alert-success text-center">${formActionMsg.body}</div>
+			</c:if>
+		</div>
 	</c:if>
-	<c:if test="${successMsg ne null}">
-		<h2 class="alert alert-success text-center">${successMsg}</h2>
-	</c:if>
+	
 	<input type="hidden" name="${_csrf.parameterName}"
 		value="${_csrf.token}" />
 </form:form>

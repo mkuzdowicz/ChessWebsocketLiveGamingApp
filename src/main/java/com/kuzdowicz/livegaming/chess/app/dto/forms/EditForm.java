@@ -5,6 +5,8 @@ import javax.validation.constraints.Size;
 
 public class EditForm {
 
+	private String userId;
+
 	private String username;
 
 	@Size(max = 15, message = "name should be maximum 10 characters")
@@ -26,13 +28,7 @@ public class EditForm {
 
 	private Boolean grantAdminAuthorities;
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
+	private Boolean accountConfirmed;
 
 	public String getEmail() {
 		return email;
@@ -90,13 +86,28 @@ public class EditForm {
 		this.grantAdminAuthorities = grantAdminAuthorities;
 	}
 
-	@Override
-	public String toString() {
-		return "EditForm [username=" + username + ", name=" + name
-				+ ", lastname=" + lastname + ", email=" + email + ", password="
-				+ password + ", confirmPassword=" + confirmPassword
-				+ ", changePasswordFlag=" + changePasswordFlag
-				+ ", grantAdminAuthorities=" + grantAdminAuthorities + "]";
+	public Boolean getAccountConfirmed() {
+		return accountConfirmed;
+	}
+
+	public void setAccountConfirmed(Boolean accountConfirmed) {
+		this.accountConfirmed = accountConfirmed;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

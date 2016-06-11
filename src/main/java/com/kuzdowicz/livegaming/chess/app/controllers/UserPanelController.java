@@ -48,13 +48,10 @@ public class UserPanelController {
 		this.env = env;
 	}
 
-	@RequestMapping("/user/your-account")
+	@RequestMapping(value = "/user/your-account", method = RequestMethod.GET)
 	public ModelAndView getLoggedInUserDetails(String errorrMessage, String successMessage, Principal principal) {
 
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String currentUserLogin = auth.getName();
-
-		UserAccount user = usersRepository.findOneByUsername(currentUserLogin);
+		UserAccount user = usersRepository.findOneByUsername(principal.getName());
 
 		ModelAndView yourAccount = new ModelAndView("pages/user/yourAccount");
 		EditForm editForm = new EditForm();

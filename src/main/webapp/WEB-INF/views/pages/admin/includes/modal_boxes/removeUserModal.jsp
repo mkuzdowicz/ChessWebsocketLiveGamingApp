@@ -10,7 +10,7 @@
 			</div>
 			<div class="modal-body text-center">
 				<form class="add-form" method="POST" action="/admin/users/remove">
-					<input type="hidden" id="id" name="username"> <input
+					<input type="hidden" id="id" name="userId"> <input
 						type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
 					<p class="text-center">
@@ -28,7 +28,8 @@
 
 		var button = $(event.relatedTarget);
 		var id = button.data('id');
-		$('#userNameSpan').html(id);
+		var username = button.data('username');
+		$('#userNameSpan').html(username);
 		var modal = $(this);
 		modal.find('input#id').val(id);
 

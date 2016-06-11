@@ -56,12 +56,16 @@
 							<td class="text-center"><c:out value="${user.name}" /></td>
 							<td class="text-center"><c:out value="${user.lastname}" /></td>
 							<td class="text-center"><c:out value="${user.email}" /></td>
-							<td class="text-center"><a
-								class="btn btn-success btn-block btn-sm"
-								href="/admin/users/editUser/?login=<c:out value="${user.username}"/>">edit</a>
-								<a data-toggle="modal" data-target="#removeUser"
-								class="btn btn-danger btn-block btn-sm"
-								data-id="<c:out value="${user.username}" />">remove</a></td>
+							<td class="text-center">
+								<form action="/admin/users/show-edit-form" method="POST">
+									<input name="userId" value="<c:out value="${user.id}"/>"
+										type="hidden"> <input type="hidden"
+										name="${_csrf.parameterName}" value="${_csrf.token}" />
+									<button class="btn btn-success btn-block btn-sm" type="submit">edit</button>
+								</form> <a data-toggle="modal" data-target="#removeUser"
+								class="btn btn-danger btn-block btn-sm" data-id="${user.id}"
+								data-username="${user.username}">remove</a>
+							</td>
 						</tr>
 					</c:forEach>
 				</tbody>
