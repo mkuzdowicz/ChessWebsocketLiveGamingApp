@@ -132,7 +132,7 @@ public class AdminPanelController {
 		usersRepository.save(user);
 
 		return showEditUserForm(user.getUsername(), editForm,
-				FormActionResultMsgDto.createSucessMsg(env.getProperty("success.user.edit")), principal);
+				FormActionResultMsgDto.createSuccessMsg(env.getProperty("success.user.edit")), principal);
 
 	}
 

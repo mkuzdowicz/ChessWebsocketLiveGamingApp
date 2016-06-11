@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kuzdowicz.livegaming.chess.app.constants.FormActionMessageType;
 import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
 import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 
@@ -49,16 +51,14 @@ public class UserPanelController {
 	}
 
 	@RequestMapping(value = "/user/your-account", method = RequestMethod.GET)
-	public ModelAndView getLoggedInUserDetails(String errorrMessage, String successMessage, Principal principal) {
+	public ModelAndView getLoggedInUserDetails(EditForm editForm, FormActionResultMsgDto formActionMsg,
+			Principal principal) {
 
 		UserAccount user = usersRepository.findOneByUsername(principal.getName());
-
 		ModelAndView yourAccount = new ModelAndView("pages/user/yourAccount");
-		EditForm editForm = new EditForm();
 		yourAccount.addObject("editForm", editForm);
 		yourAccount.addObject("user", user);
-		yourAccount.addObject("errorrMessage", errorrMessage);
-		yourAccount.addObject("successMessage", successMessage);
+		yourAccount.addObject("formActionMsg", formActionMsg);
 		addBasicObjectsToModelAndView(yourAccount, principal);
 
 		return yourAccount;
@@ -89,14 +89,16 @@ public class UserPanelController {
 		String userLogin = editForm.getUsername();
 		String name = editForm.getName();
 		String lastname = editForm.getLastname();
-
 		String email = editForm.getEmail();
 		String password = editForm.getPassword();
 		String confirmPassword = editForm.getConfirmPassword();
 
 		if (changePasswordFlag && !password.equals(confirmPassword)) {
 
-			return getLoggedInUserDetails(env.getProperty("error.passwords.notequal"), null, principal);
+			return getLoggedInUserDetails(//
+					editForm, //
+					FormActionResultMsgDto.createErrorMsg(env.getProperty("error.passwords.notequal")), //
+					principal);
 		}
 
 		UserAccount user = usersRepository.findOneByUsername(userLogin);
@@ -119,7 +121,11 @@ public class UserPanelController {
 		user.setEmail(email);
 		usersRepository.save(user);
 
-		return getLoggedInUserDetails(null, env.getProperty("success.user.edit"), principal);
+		return getLoggedInUserDetails(//
+				editForm, //
+				FormActionResultMsgDto.createSuccessMsg(env.getProperty("success.user.edit")), //
+				principal);
+
 	}
 
 	@RequestMapping(value = "/user/your-chessgames", method = RequestMethod.GET)
@@ -143,6 +149,8 @@ public class UserPanelController {
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
 		mav.addObject("currentUserName",
 				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
+		mav.addObject("errorMsg", FormActionMessageType.ERROR);
+		mav.addObject("successMsg", FormActionMessageType.SUCCESS);
 	}
 
 }

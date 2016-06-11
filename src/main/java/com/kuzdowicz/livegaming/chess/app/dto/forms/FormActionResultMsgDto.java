@@ -31,7 +31,7 @@ public class FormActionResultMsgDto {
 		this.body = body;
 	}
 
-	public static FormActionResultMsgDto createSucessMsg(String msg) {
+	public static FormActionResultMsgDto createSuccessMsg(String msg) {
 		return new FormActionResultMsgDto(FormActionMessageType.SUCCESS, msg);
 	}
 

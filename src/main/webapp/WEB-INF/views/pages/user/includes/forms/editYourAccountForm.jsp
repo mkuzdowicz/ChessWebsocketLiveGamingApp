@@ -49,22 +49,6 @@
 		</div>
 	</c:if>
 
-	<c:choose>
-		<c:when test="${ errorrMessage != null }">
-			<div class="form-group col-sm-12">
-				<div class="alert alert-danger text-center">${errorrMessage}</div>
-			</div>
-		</c:when>
-	</c:choose>
-
-	<c:choose>
-		<c:when test="${ successMessage != null }">
-			<div class="form-group col-sm-12">
-				<div class="alert alert-success text-center">${successMessage}</div>
-			</div>
-		</c:when>
-	</c:choose>
-
 	<div id="passwordChangeInputs">
 		<div class="form-group">
 			<label class="col-sm-2 control-label"> userPassword: </label>
@@ -89,16 +73,28 @@
 			password
 		</label>
 	</div>
+
+
+	<input type="hidden" name="${_csrf.parameterName}"
+		value="${_csrf.token}" />
+
+	<c:if test="${ formActionMsg ne null }">
+		<div class="form-group col-sm-12">
+			<c:if test="${ formActionMsg.type eq errorMsg }">
+				<div class="alert alert-danger text-center">${formActionMsg.body}</div>
+			</c:if>
+			<c:if test="${ formActionMsg.type eq successMsg }">
+				<div class="alert alert-success text-center">${formActionMsg.body}</div>
+			</c:if>
+		</div>
+	</c:if>
+
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-8">
 			<input class="btn btn-success btn-block" type="submit"
 				value="change data" />
 		</div>
 	</div>
-
-	<input type="hidden" name="${_csrf.parameterName}"
-		value="${_csrf.token}" />
-
 </form:form>
 <script>
 	$(document).ready(function() {

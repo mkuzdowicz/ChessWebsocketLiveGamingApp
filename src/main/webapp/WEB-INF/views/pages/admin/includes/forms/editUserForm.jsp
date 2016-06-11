@@ -59,17 +59,6 @@
 		</div>
 	</c:if>
 
-	<c:if test="${ formActionMsg ne null }">
-		<div class="form-group col-sm-12">
-			<c:if test="${ formActionMsg.type eq errorMsg }">
-				<div class="alert alert-danger text-center">${formActionMsg.body}</div>
-			</c:if>
-			<c:if test="${ formActionMsg.type eq successMsg }">
-				<div class="alert alert-success text-center">${formActionMsg.body}</div>
-			</c:if>
-		</div>
-	</c:if>
-
 	<div id="passwordChangeInputs">
 		<div class="form-group">
 			<label class="col-sm-2 control-label"> userPassword: </label>
@@ -105,6 +94,17 @@
 		value="${_csrf.token}" />
 
 	<form:input type="hidden" path="userId" />
+
+	<c:if test="${ formActionMsg ne null }">
+		<div class="form-group col-sm-12">
+			<c:if test="${ formActionMsg.type eq errorMsg }">
+				<div class="alert alert-danger text-center">${formActionMsg.body}</div>
+			</c:if>
+			<c:if test="${ formActionMsg.type eq successMsg }">
+				<div class="alert alert-success text-center">${formActionMsg.body}</div>
+			</c:if>
+		</div>
+	</c:if>
 
 </form:form>
 <script>
