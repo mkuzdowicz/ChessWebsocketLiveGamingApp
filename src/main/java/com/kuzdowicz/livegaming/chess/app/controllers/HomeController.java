@@ -34,7 +34,6 @@ public class HomeController {
 
 		ModelAndView homePageModel = new ModelAndView("pages/public/home");
 		addBasicObjectsToModelAndView(homePageModel, principal);
-
 		return homePageModel;
 	}
 
@@ -43,8 +42,8 @@ public class HomeController {
 
 		ModelAndView bestPlayers = new ModelAndView("pages/public/bestPlayers");
 		addBasicObjectsToModelAndView(bestPlayers, principal);
-		Pageable p = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "numberOfWonChessGames"));
-		List<UserAccount> bestPlayingUsers = repository.findAllWhereNumberOfWonChessGamesGt0(p);
+		Pageable pageable = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "numberOfWonChessGames"));
+		List<UserAccount> bestPlayingUsers = repository.findAllWhereNumberOfWonChessGamesGt0(pageable);
 		bestPlayers.addObject("bestPlayersJson", gson.toJson(bestPlayingUsers));
 
 		return bestPlayers;

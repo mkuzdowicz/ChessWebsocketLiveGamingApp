@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
 import com.kuzdowicz.livegaming.chess.app.services.MailService;
@@ -47,32 +48,25 @@ public class SignUpController {
 		this.env = env;
 	}
 
-	@RequestMapping("/signup")
-	public ModelAndView getSignUpForm(SignUpForm signUpFomr, String msg, Principal principa) {
+	@RequestMapping(value = "/signup", method = RequestMethod.GET)
+	public ModelAndView getSignUpForm(SignUpForm signUpFomr, FormActionResultMsgDto formActionMsg, Principal principa) {
 
 		ModelAndView signUpSite = new ModelAndView("pages/public/signup");
-		if (msg != null) {
-			signUpSite.addObject("errorMessage", msg);
-		}
+		signUpSite.addObject("formActionMsg", formActionMsg);
 		signUpSite.addObject("signUpFomr", signUpFomr);
 		addBasicObjectsToModelAndView(signUpSite, principa);
-
 		return signUpSite;
 	}
 
-	@RequestMapping("/signup/account/creation")
+	@RequestMapping(value = "/signup/account/creation", method = RequestMethod.GET)
 	public ModelAndView getSiteAccountCreationInfo(String userCreationMsg, boolean created, String userMail,
 			String userPassword, Principal principa) {
 
-		ModelAndView accountCreationInfo = new ModelAndView("pages/public/creatAccountMessage");
-		accountCreationInfo.addObject("msg", userCreationMsg);
-		accountCreationInfo.addObject("created", created);
-		if (created) {
-			accountCreationInfo.addObject("userMail", userMail);
-		}
-		addBasicObjectsToModelAndView(accountCreationInfo, principa);
+		ModelAndView accountCreatedPage = new ModelAndView("pages/public/accountCreatedMsgPage");
 
-		return accountCreationInfo;
+		accountCreatedPage.addObject("userMail", userMail);
+		addBasicObjectsToModelAndView(accountCreatedPage, principa);
+		return accountCreatedPage;
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
@@ -88,22 +82,34 @@ public class SignUpController {
 		String confirmPassword = signUpFomr.getConfirmPassword();
 
 		if (!userPassword.equals(confirmPassword)) {
-			return getSignUpForm(signUpFomr, env.getProperty("error.passwords.notequal"), principa);
+			FormActionResultMsgDto formActionMsg = FormActionResultMsgDto
+					.createErrorMsg(env.getProperty("error.passwords.notequal"));
+			return getSignUpForm(signUpFomr, formActionMsg, principa);
 		}
-		return createAccount(signUpFomr, principa);
+
+		int status = createAccount(signUpFomr, principa);
+		if (status == -1) {
+			FormActionResultMsgDto formActionMsg = FormActionResultMsgDto
+					.createErrorMsg(env.getProperty("error.confirmation.mail"));
+			return getSignUpForm(signUpFomr, formActionMsg, principa);
+		}
+		ModelAndView accountCreatedPage = new ModelAndView("pages/public/accountCreatedMsgPage");
+		accountCreatedPage.addObject("userMail", signUpFomr.getEmail());
+		addBasicObjectsToModelAndView(accountCreatedPage, principa);
+
+		return accountCreatedPage;
 	}
 
 	@Transactional
-	private ModelAndView createAccount(SignUpForm signUpFomr, Principal principa) {
+	private int createAccount(SignUpForm signUpFomr, Principal principa) {
 
 		String userLogin = signUpFomr.getUsername();
 		String userEmail = signUpFomr.getEmail();
 		String userPassword = signUpFomr.getPassword();
-		String hashPassword = passwordEncoder.encode(userPassword);
 
 		UserAccount newUser = new UserAccount();
 		newUser.setUsername(userLogin);
-		newUser.setPassword(hashPassword);
+		newUser.setPassword(passwordEncoder.encode(userPassword));
 		newUser.setRole(UserRoles.USER.geNumericValue());
 		newUser.setEmail(userEmail);
 
@@ -117,12 +123,11 @@ public class SignUpController {
 			mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
 		} catch (Exception e) {
 			logger.warn("exception occured: ", e);
-			return getSignUpForm(signUpFomr, env.getProperty("error.confirmation.mail"), principa);
+			return -1;
 		}
 
 		usersRepository.insert(newUser);
-		return getSiteAccountCreationInfo(env.getProperty("success.user.created"), true, userEmail, userPassword,
-				principa);
+		return 1;
 	}
 
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
