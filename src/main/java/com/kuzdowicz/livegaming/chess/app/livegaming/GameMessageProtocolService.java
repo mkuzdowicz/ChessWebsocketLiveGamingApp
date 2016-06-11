@@ -19,7 +19,7 @@ import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMove;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessage;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameUser;
 import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
+import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Service
 public class GameMessageProtocolService {
@@ -31,12 +31,12 @@ public class GameMessageProtocolService {
 	private final LiveChessGamesRepository liveChessGamesRepository;
 	private final Gson gson;
 	private final ChessGamesRepository chessGamesRepository;
-	private final UsersRepository usersRepository;
+	private final UsersAccountsRepository usersRepository;
 
 	@Autowired
 	public GameMessageProtocolService(WebSocketSessionsRepository webSocketSessionsRepository,
 			LiveGamingUsersRepository liveGamingUsersRepository, LiveChessGamesRepository liveChessGamesRepository,
-			Gson gson, ChessGamesRepository chessGamesRepository, UsersRepository usersRepository) {
+			Gson gson, ChessGamesRepository chessGamesRepository, UsersAccountsRepository usersRepository) {
 		this.webSocketSessionsRepository = webSocketSessionsRepository;
 		this.liveGamingUsersRepository = liveGamingUsersRepository;
 		this.liveChessGamesRepository = liveChessGamesRepository;

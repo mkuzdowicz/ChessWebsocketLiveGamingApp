@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 
-public interface UsersRepository extends MongoRepository<UserAccount, String> {
+public interface UsersAccountsRepository extends MongoRepository<UserAccount, String> {
 
 	UserAccount findOneByUsername(String username);
 

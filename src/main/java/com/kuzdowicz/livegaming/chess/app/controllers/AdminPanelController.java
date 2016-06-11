@@ -26,7 +26,7 @@ import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
+import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Controller
 @PropertySource("classpath:messages.properties")
@@ -34,12 +34,12 @@ public class AdminPanelController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AdminPanelController.class);
 
-	private final UsersRepository usersRepository;
+	private final UsersAccountsRepository usersRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final Environment env;
 
 	@Autowired
-	public AdminPanelController(UsersRepository usersRepository, PasswordEncoder passwordEncoder, Environment env) {
+	public AdminPanelController(UsersAccountsRepository usersRepository, PasswordEncoder passwordEncoder, Environment env) {
 		this.usersRepository = usersRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.env = env;

@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
+import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Component
 public class CheckUsersCollectionScheduler {
@@ -27,10 +27,10 @@ public class CheckUsersCollectionScheduler {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-	private final UsersRepository usersRpository;
+	private final UsersAccountsRepository usersRpository;
 
 	@Autowired
-	public CheckUsersCollectionScheduler(UsersRepository usersRpository) {
+	public CheckUsersCollectionScheduler(UsersAccountsRepository usersRpository) {
 		this.usersRpository = usersRpository;
 	}
 

@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
+import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Controller
 public class UsersAjaxController {
 
-	private final UsersRepository usersRepository;
+	private final UsersAccountsRepository usersRepository;
 
 	@Autowired
-	public UsersAjaxController(UsersRepository usersRepository) {
+	public UsersAjaxController(UsersAccountsRepository usersRepository) {
 		this.usersRepository = usersRepository;
 	}
 

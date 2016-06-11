@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
+import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Controller
 @PropertySource("classpath:messages.properties")
 public class RegistrationConfirmationController {
 
-	private final UsersRepository usersRepository;
+	private final UsersAccountsRepository usersRepository;
 	private final Environment env;
 
 	@Autowired
-	public RegistrationConfirmationController(UsersRepository usersRepository, Environment env) {
+	public RegistrationConfirmationController(UsersAccountsRepository usersRepository, Environment env) {
 		this.usersRepository = usersRepository;
 		this.env = env;
 	}

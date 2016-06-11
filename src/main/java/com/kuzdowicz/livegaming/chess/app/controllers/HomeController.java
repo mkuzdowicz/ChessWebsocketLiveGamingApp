@@ -15,16 +15,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersRepository;
+import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Controller
 public class HomeController {
 
-	private final UsersRepository repository;
+	private final UsersAccountsRepository repository;
 	private final Gson gson;
 
 	@Autowired
-	public HomeController(UsersRepository repository, Gson gson) {
+	public HomeController(UsersAccountsRepository repository, Gson gson) {
 		this.repository = repository;
 		this.gson = gson;
 	}

@@ -83,7 +83,7 @@ public class MailService {
 		return sb.toString();
 	}
 
-	public void sendMail(String to, String from, String subject, String messageContent) {
+	private void sendMail(String to, String from, String subject, String messageContent) {
 		logger.debug("sendMail()");
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
