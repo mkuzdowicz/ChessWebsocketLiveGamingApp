@@ -51,7 +51,7 @@ public class LiveChessGamesRepository {
 		game.getListOfMoves().add(currentMove);
 	}
 
-	public synchronized static void calculateAndSetTimeDurationBeetwenGameBeginAndEnd(ChessGame game) {
+	public synchronized void calculateAndSetTimeDurationBeetwenGameBeginAndEnd(ChessGame game) {
 		if (game.getBeginDate() != null && game.getEndDate() != null) {
 			DateTime beginDate = new DateTime(game.getBeginDate());
 			DateTime endDate = new DateTime(game.getEndDate());

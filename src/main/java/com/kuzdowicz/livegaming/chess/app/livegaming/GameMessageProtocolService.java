@@ -116,7 +116,7 @@ public class GameMessageProtocolService {
 		ChessGame game = liveChessGamesRepository.getGameByUniqueHashId(webSocketUserObj.getUniqueActualGameHash());
 		game.setEndDate(new Date());
 		game.setEndingGameFENString(messageObj.getFen());
-		LiveChessGamesRepository.calculateAndSetTimeDurationBeetwenGameBeginAndEnd(game);
+		liveChessGamesRepository.calculateAndSetTimeDurationBeetwenGameBeginAndEnd(game);
 
 		if (messageObj.getCheckMate() != null && messageObj.getCheckMate() == true) {
 			game.setCheckMate(true);
