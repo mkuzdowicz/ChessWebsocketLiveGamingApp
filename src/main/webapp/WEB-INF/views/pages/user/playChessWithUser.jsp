@@ -39,7 +39,7 @@
 					<input type="hidden" id="fenFromPreviousMove" /> <input
 						type="hidden" id="fenFromYourMove" />
 					<section id="onlineUsersSection">
-						<div id="connection-status"></div>
+						<div id="connection-status" class="text-center"></div>
 						<div id="game-status" data-isPlaying=""></div>
 
 						<div id="play-with-opponent-interface" hidden="true">
@@ -50,7 +50,7 @@
 							</div>
 							<div id="move-for"></div>
 							<br />
-							<div id="play-with-opponent-interface-actions">
+							<div class="row" id="play-with-opponent-interface-actions">
 								<button id="send-move-btn" class="btn btn-info"
 									data-opponentName="">send-move</button>
 								<button id="undo-move-btn" class="btn btn-default">undo-move</button>
