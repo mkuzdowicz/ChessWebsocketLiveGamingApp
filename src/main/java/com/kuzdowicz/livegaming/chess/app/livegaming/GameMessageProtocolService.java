@@ -15,9 +15,9 @@ import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMove;
-import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessage;
-import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameUser;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMoveDto;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
 import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
@@ -45,7 +45,7 @@ public class GameMessageProtocolService {
 		this.usersRepository = usersRepository;
 	}
 
-	public synchronized void proccessMessage(GameMessage messageObj, String messageJsonString) {
+	public synchronized void proccessMessage(GameMessageDto messageObj, String messageJsonString) {
 
 		String messageType = messageObj.getType();
 		if (messageType.equals(GameMessageType.GAME_HANDSHAKE_INVITATION)) {
@@ -64,18 +64,18 @@ public class GameMessageProtocolService {
 		} else if (messageType.equals(GameMessageType.CHESS_MOVE)) {
 
 			String fromUsername = messageObj.getSendFrom();
-			GameUser fromUser = liveGamingUsersRepository.getWebsocketUser(fromUsername);
+			LiveGamingUserDto fromUser = liveGamingUsersRepository.getWebsocketUser(fromUsername);
 
 			if (isUserPlayingWithAnyUser(fromUser)) {
 
 				String toUsername = messageObj.getSendTo();
-				GameUser toUser = liveGamingUsersRepository.getWebsocketUser(toUsername);
+				LiveGamingUserDto toUser = liveGamingUsersRepository.getWebsocketUser(toUsername);
 
 				if (toUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)) {
 
 					if (userONEPlayWithUserTWO(fromUser, toUser)) {
 
-						ChessMove currentMove = messageObj.getChessMove();
+						ChessMoveDto currentMove = messageObj.getChessMove();
 
 						liveChessGamesRepository.addActualMoveToThisGameObject(toUser.getUniqueActualGameHash(),
 								currentMove);
@@ -110,9 +110,9 @@ public class GameMessageProtocolService {
 
 	}
 
-	private synchronized void saveStatisticsDataToDbIfQuitGameOrIfCheckMate(GameMessage messageObj) {
+	private synchronized void saveStatisticsDataToDbIfQuitGameOrIfCheckMate(GameMessageDto messageObj) {
 
-		GameUser webSocketUserObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
+		LiveGamingUserDto webSocketUserObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
 		ChessGame game = liveChessGamesRepository.getGameByUniqueHashId(webSocketUserObj.getUniqueActualGameHash());
 		game.setEndDate(new Date());
 		game.setEndingGameFENString(messageObj.getFen());
@@ -182,7 +182,7 @@ public class GameMessageProtocolService {
 		chessGamesRepository.save(game);
 	}
 
-	private synchronized Boolean userONEPlayWithUserTWO(GameUser fromUser, GameUser toUser) {
+	private synchronized Boolean userONEPlayWithUserTWO(LiveGamingUserDto fromUser, LiveGamingUserDto toUser) {
 		if (fromUser != null && toUser != null && fromUser.getPlayNowWithUser().equals(toUser.getUsername())
 				&& toUser.getPlayNowWithUser().equals(fromUser.getUsername())) {
 			return true;
@@ -191,7 +191,7 @@ public class GameMessageProtocolService {
 		}
 	}
 
-	private synchronized Boolean isUserPlayingWithAnyUser(GameUser user) {
+	private synchronized Boolean isUserPlayingWithAnyUser(LiveGamingUserDto user) {
 		if (user != null && user.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)
 				&& user.getPlayNowWithUser() != null && !user.getPlayNowWithUser().equals("")) {
 			return true;
@@ -200,9 +200,9 @@ public class GameMessageProtocolService {
 		}
 	}
 
-	private synchronized void setUserComStatusIsDuringHandshakeSendMsgAndRefresh(GameMessage messageObj,
+	private synchronized void setUserComStatusIsDuringHandshakeSendMsgAndRefresh(GameMessageDto messageObj,
 			String messageJsonString) {
-		GameUser invitedUser = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
+		LiveGamingUserDto invitedUser = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
 
 		if (invitedUser != null
 				&& !invitedUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_DURING_HANDSHAKE)
@@ -212,10 +212,10 @@ public class GameMessageProtocolService {
 			liveGamingUsersRepository.setComStatusIsDuringHandshake(messageObj.getSendTo());
 			liveGamingUsersRepository.setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
 
-			GameUser sendToObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
+			LiveGamingUserDto sendToObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
 			messageObj.setSendToObj(sendToObj);
 
-			GameUser sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
+			LiveGamingUserDto sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
 			messageObj.setSendFromObj(sendFromObj);
 
 			sendMessageToOneUser(messageObj, gson.toJson(messageObj));
@@ -224,7 +224,7 @@ public class GameMessageProtocolService {
 		} else {
 			logger.debug("invited user is already playing, is during handshake or is null");
 
-			GameMessage tryLaterMsg = new GameMessage();
+			GameMessageDto tryLaterMsg = new GameMessageDto();
 			tryLaterMsg.setType(GameMessageType.TRY_LATER);
 
 			webSocketSessionsRepository.sendToSession(messageObj.getSendFrom(), "server", gson.toJson(tryLaterMsg));
@@ -232,19 +232,19 @@ public class GameMessageProtocolService {
 
 	}
 
-	private synchronized void setUserComStatusIsPlayingAndRefresh(GameMessage messageObj) {
+	private synchronized void setUserComStatusIsPlayingAndRefresh(GameMessageDto messageObj) {
 
 		String actualChessGameUUID = UUID.randomUUID().toString();
 
 		liveGamingUsersRepository.setComStatusIsPlaying(messageObj.getSendTo(), messageObj.getSendFrom());
 		liveGamingUsersRepository.setComStatusIsPlaying(messageObj.getSendFrom(), messageObj.getSendTo());
 
-		GameUser sendToObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
+		LiveGamingUserDto sendToObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendTo());
 
 		sendToObj.setUniqueActualGameHash(actualChessGameUUID);
 		messageObj.setSendToObj(sendToObj);
 
-		GameUser sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
+		LiveGamingUserDto sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageObj.getSendFrom());
 
 		sendFromObj.setUniqueActualGameHash(actualChessGameUUID);
 		messageObj.setSendFromObj(sendFromObj);
@@ -262,7 +262,7 @@ public class GameMessageProtocolService {
 	}
 
 	private synchronized ChessGame prepareAndReturnChessGameObjectAtGameStart(String actualChessGameUUID,
-			GameUser sendToObj, GameUser sendFromObj, GameMessage messageObj) {
+			LiveGamingUserDto sendToObj, LiveGamingUserDto sendFromObj, GameMessageDto messageObj) {
 
 		ChessGame chessGame = new ChessGame();
 		chessGame.setUniqueGameHash(actualChessGameUUID);
@@ -282,7 +282,7 @@ public class GameMessageProtocolService {
 		return chessGame;
 	}
 
-	private synchronized void setUserComStatusWaitForNewGameAndRefresh(GameMessage messageObj) {
+	private synchronized void setUserComStatusWaitForNewGameAndRefresh(GameMessageDto messageObj) {
 
 		liveGamingUsersRepository.setComStatusWaitForNewGame(messageObj.getSendFrom());
 		liveGamingUsersRepository.setComStatusWaitForNewGame(messageObj.getSendTo());
@@ -290,7 +290,7 @@ public class GameMessageProtocolService {
 		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
 	}
 
-	private synchronized void sendMessageToOneUser(GameMessage message, String content) {
+	private synchronized void sendMessageToOneUser(GameMessageDto message, String content) {
 
 		String toUsername = message.getSendTo();
 		String fromUsername = message.getSendFrom();

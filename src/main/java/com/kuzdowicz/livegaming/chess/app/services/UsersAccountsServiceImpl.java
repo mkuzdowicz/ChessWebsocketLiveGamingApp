@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kuzdowicz.livegaming.chess.app.constants.UserAccountCreationStatus;
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
-import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.EditFormDto;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpFormDto;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Service
@@ -49,7 +49,7 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 
 	@Transactional(rollbackFor = MessagingException.class)
 	@Override
-	public UserAccountCreationStatus createNewAccountAsUser(SignUpForm signUpForm) {
+	public UserAccountCreationStatus createNewAccountAsUser(SignUpFormDto signUpForm) {
 
 		if (loginIsTaken(signUpForm.getUsername())) {
 			return UserAccountCreationStatus.NOT_CREATED_LOGIN_TAKEN;
@@ -71,18 +71,17 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 		return UserAccountCreationStatus.CREATED;
 	}
 
-	private UserAccount createBasicUserFromSignUpForm(SignUpForm signUpForm) {
+	private UserAccount createBasicUserFromSignUpForm(SignUpFormDto signUpForm) {
 		UserAccount newUser = new UserAccount();
 		newUser.setUsername(signUpForm.getUsername());
 		newUser.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
 		newUser.setEmail(signUpForm.getEmail());
 		newUser.setRegistrationDate(new Date());
 		return newUser;
-
 	}
 
 	@Override
-	public UserAccountCreationStatus createNewAccountAsAdmin(SignUpForm signUpForm) {
+	public UserAccountCreationStatus createNewAccountAsAdmin(SignUpFormDto signUpForm) {
 		if (loginIsTaken(signUpForm.getUsername())) {
 			return UserAccountCreationStatus.NOT_CREATED_LOGIN_TAKEN;
 		}
@@ -101,11 +100,6 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 	}
 
 	@Override
-	public UserAccount editUser(UserAccount u) {
-		return usersRepository.save(u);
-	}
-
-	@Override
 	public List<UserAccount> all() {
 		return usersRepository.findAll();
 	}
@@ -115,9 +109,9 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 	}
 
 	@Override
-	public EditForm getUserByIdAndBindToEditFormDto(String userId) {
+	public EditFormDto getUserByIdAndBindToEditFormDto(String userId) {
 		UserAccount user = getUserByPK(userId);
-		EditForm editForm = new EditForm();
+		EditFormDto editForm = new EditFormDto();
 		editForm.setUsername(user.getUsername());
 		editForm.setUserId(user.getId());
 		editForm.setEmail(user.getEmail());
@@ -126,6 +120,49 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 		editForm.setAccountConfirmed(user.getIsRegistrationConfirmed());
 		editForm.setGrantAdminAuthorities(user.getRole() == UserRoles.ADMIN.geNumericValue() ? true : false);
 		return editForm;
+	}
+
+	@Override
+	public EditFormDto getUserByLoginAndBindToEditFormDto(String login) {
+		UserAccount user = getUserByLogin(login);
+		EditFormDto editForm = new EditFormDto();
+		editForm.setUsername(user.getUsername());
+		editForm.setUserId(user.getId());
+		editForm.setEmail(user.getEmail());
+		editForm.setName(user.getName());
+		editForm.setLastname(user.getLastname());
+		editForm.setAccountConfirmed(user.getIsRegistrationConfirmed());
+		editForm.setGrantAdminAuthorities(user.getRole() == UserRoles.ADMIN.geNumericValue() ? true : false);
+		return editForm;
+	}
+
+	@Override
+	public UserAccount editUserAccoutnAsAdmin(EditFormDto editForm, String userIdToEdit) {
+		UserAccount u = getUserByIdAndBindWithEditForm(editForm, userIdToEdit);
+		Boolean setAsAdminFlag = editForm.getGrantAdminAuthorities();
+		u.setRole(setAsAdminFlag ? UserRoles.ADMIN.geNumericValue() : UserRoles.USER.geNumericValue());
+		u.setIsRegistrationConfirmed(editForm.getAccountConfirmed());
+		usersRepository.save(u);
+		return u;
+	}
+
+	@Override
+	public UserAccount editUserAccoutnAsUser(EditFormDto editForm, String userIdToEdit) {
+		UserAccount u = getUserByIdAndBindWithEditForm(editForm, userIdToEdit);
+		usersRepository.save(u);
+		return u;
+	}
+
+	private UserAccount getUserByIdAndBindWithEditForm(EditFormDto editForm, String userId) {
+
+		UserAccount userToEdit = getUserByPK(userId);
+		userToEdit.setName(editForm.getName());
+		userToEdit.setLastname(editForm.getLastname());
+		userToEdit.setEmail(editForm.getEmail());
+		if (editForm.getChangePasswordFlag()) {
+			userToEdit.setPassword(passwordEncoder.encode(editForm.getPassword()));
+		}
+		return userToEdit;
 	}
 
 }

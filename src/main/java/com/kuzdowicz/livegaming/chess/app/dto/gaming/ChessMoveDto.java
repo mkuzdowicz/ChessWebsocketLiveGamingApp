@@ -1,6 +1,6 @@
 package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
-public class ChessMove {
+public class ChessMoveDto {
 
 	private String color;
 	private String flags;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kuzdowicz.livegaming.chess.app.dto.forms.LoginForm;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.LoginFormDto;
 
 @Controller
 @PropertySource("classpath:messages.properties")
@@ -25,7 +25,7 @@ public class LoginController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public ModelAndView getLoginPage(LoginForm loginForm, Principal principal) {
+	public ModelAndView getLoginPage(LoginFormDto loginForm, Principal principal) {
 		ModelAndView loginPageModel = new ModelAndView("pages/public/login");
 		loginPageModel.addObject("loginForm", loginForm);
 		addBasicObjectsToModelAndView(loginPageModel, principal);

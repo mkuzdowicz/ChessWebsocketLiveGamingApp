@@ -6,7 +6,7 @@
 
 
 <form:form action="/admin/users/edit-user" method="POST"
-	commandName="editForm" name="editUserForm" class="form-horizontal">
+	commandName="editForm" name="editForm" class="form-horizontal">
 	<div class="form-group">
 		<label class="control-label col-sm-2">login</label>
 		<div class="col-sm-8">

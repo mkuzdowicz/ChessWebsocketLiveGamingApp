@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserAccountCreationStatus;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
-import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.EditFormDto;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpFormDto;
 
 public interface UsersAccountsService {
 
@@ -13,15 +13,19 @@ public interface UsersAccountsService {
 
 	UserAccount getUserByLogin(String login);
 
-	UserAccountCreationStatus createNewAccountAsAdmin(SignUpForm signUpForm);
+	UserAccountCreationStatus createNewAccountAsAdmin(SignUpFormDto signUpForm);
 
-	UserAccountCreationStatus createNewAccountAsUser(SignUpForm signUpForm);
+	UserAccountCreationStatus createNewAccountAsUser(SignUpFormDto signUpForm);
 
 	void deleteUserByPK(String userId);
 
-	UserAccount editUser(UserAccount u);
-
 	List<UserAccount> all();
 
-	EditForm getUserByIdAndBindToEditFormDto(String userId);
+	EditFormDto getUserByIdAndBindToEditFormDto(String userId);
+	
+	EditFormDto getUserByLoginAndBindToEditFormDto(String login);
+
+	UserAccount editUserAccoutnAsAdmin(EditFormDto editForm, String userIdToEdit);
+
+	UserAccount editUserAccoutnAsUser(EditFormDto editForm, String userIdToEdit);
 }

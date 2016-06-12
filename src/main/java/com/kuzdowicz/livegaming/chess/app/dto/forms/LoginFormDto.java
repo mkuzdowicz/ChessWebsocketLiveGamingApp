@@ -4,7 +4,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-public class LoginForm {
+public class LoginFormDto {
 
 	@NotNull(message = "please enter a login")
 	@Size(min = 5, max = 12, message = "your login should be between 5 - 12 characters")

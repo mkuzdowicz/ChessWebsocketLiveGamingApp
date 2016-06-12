@@ -6,8 +6,8 @@
 		<div class="alert alert-danger">${msg}</div>
 	</c:when>
 </c:choose>
-<form:form method="POST" commandName="signUpFomr"
-	class="form-horizontal" name="signUpFomr">
+<form:form method="POST" commandName="signUpForm"
+	class="form-horizontal" name="signUpForm">
 
 	<div class="form-group">
 		<label class="control-label col-sm-2">login</label>

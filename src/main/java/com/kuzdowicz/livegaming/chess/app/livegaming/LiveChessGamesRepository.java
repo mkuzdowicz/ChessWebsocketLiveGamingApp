@@ -14,7 +14,7 @@ import org.joda.time.Seconds;
 import org.springframework.stereotype.Component;
 
 import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
-import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMove;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMoveDto;
 
 @Component
 public class LiveChessGamesRepository {
@@ -46,7 +46,7 @@ public class LiveChessGamesRepository {
 		return values;
 	}
 
-	public synchronized void addActualMoveToThisGameObject(String uniqueGameHash, ChessMove currentMove) {
+	public synchronized void addActualMoveToThisGameObject(String uniqueGameHash, ChessMoveDto currentMove) {
 		ChessGame game = chessGamesMap.get(uniqueGameHash);
 		game.getListOfMoves().add(currentMove);
 	}

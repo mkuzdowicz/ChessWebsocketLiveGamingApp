@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserAccountCreationStatus;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
-import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
+import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpFormDto;
 import com.kuzdowicz.livegaming.chess.app.services.UsersAccountsService;
 
 @Controller
@@ -34,7 +34,8 @@ public class SignUpController {
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
-	public ModelAndView getSignUpForm(SignUpForm signUpForm, FormActionResultMsgDto formActionMsg, Principal principa) {
+	public ModelAndView getSignUpForm(SignUpFormDto signUpForm,
+			FormActionResultMsgDto formActionMsg, Principal principa) {
 
 		ModelAndView signUpSite = new ModelAndView("pages/public/signup");
 		signUpSite.addObject("formActionMsg", formActionMsg);
@@ -52,8 +53,8 @@ public class SignUpController {
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpForm") SignUpForm signUpForm, BindingResult result,
-			Principal principal) {
+	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpForm") SignUpFormDto signUpForm,
+			BindingResult result, Principal principal) {
 
 		String userPassword = signUpForm.getPassword();
 		String confirmPassword = signUpForm.getConfirmPassword();

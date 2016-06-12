@@ -1,6 +1,6 @@
 package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
-public class GameMessage {
+public class GameMessageDto {
 
 	private String type;
 
@@ -12,19 +12,19 @@ public class GameMessage {
 
 	private String moveStatus;
 
-	private GameUser sendToObj;
+	private LiveGamingUserDto sendToObj;
 
-	private GameUser sendFromObj;
+	private LiveGamingUserDto sendFromObj;
 
 	private Boolean checkMate;
 
-	private ChessMove chessMove;
+	private ChessMoveDto chessMove;
 
 	private String whiteColUsername;
 
 	private String blackColUsername;
 
-	public GameMessage() {
+	public GameMessageDto() {
 
 	}
 
@@ -36,19 +36,19 @@ public class GameMessage {
 		this.type = type;
 	}
 
-	public GameUser getSendToObj() {
+	public LiveGamingUserDto getSendToObj() {
 		return sendToObj;
 	}
 
-	public void setSendToObj(GameUser sendToObj) {
+	public void setSendToObj(LiveGamingUserDto sendToObj) {
 		this.sendToObj = sendToObj;
 	}
 
-	public GameUser getSendFromObj() {
+	public LiveGamingUserDto getSendFromObj() {
 		return sendFromObj;
 	}
 
-	public void setSendFromObj(GameUser sendFromObj) {
+	public void setSendFromObj(LiveGamingUserDto sendFromObj) {
 		this.sendFromObj = sendFromObj;
 	}
 
@@ -92,11 +92,11 @@ public class GameMessage {
 		this.fen = fen;
 	}
 
-	public ChessMove getChessMove() {
+	public ChessMoveDto getChessMove() {
 		return chessMove;
 	}
 
-	public void setChessMove(ChessMove chessMove) {
+	public void setChessMove(ChessMoveDto chessMove) {
 		this.chessMove = chessMove;
 	}
 

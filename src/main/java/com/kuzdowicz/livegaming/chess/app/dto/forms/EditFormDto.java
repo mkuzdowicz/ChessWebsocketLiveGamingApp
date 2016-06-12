@@ -3,7 +3,7 @@ package com.kuzdowicz.livegaming.chess.app.dto.forms;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-public class EditForm {
+public class EditFormDto {
 
 	private String userId;
 

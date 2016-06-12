@@ -12,8 +12,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.google.gson.Gson;
 import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
-import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessage;
-import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameUser;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
 
 @Component
 public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
@@ -43,7 +43,7 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 		if (liveGamingUsersRepository.userListNotContainsUsername(sender)) {
 
-			GameUser gameUser = new GameUser(sender);
+			LiveGamingUserDto gameUser = new LiveGamingUserDto(sender);
 			gameUser.setCommunicationStatus(GameUserCommunicationStatus.WAIT_FOR_NEW_GAME);
 
 			webSocketSessionsRepository.addSession(sender, session);
@@ -56,7 +56,7 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String msg = message.getPayload();
-		GameMessage gameMessage = gson.fromJson(msg, GameMessage.class);
+		GameMessageDto gameMessage = gson.fromJson(msg, GameMessageDto.class);
 		gameMessageProtocol.proccessMessage(gameMessage, msg);
 	}
 
@@ -65,18 +65,18 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 		String sender = session.getAttributes().get("username").toString();
 		synchronized (this) {
-			GameUser cloesingConnectionUser = liveGamingUsersRepository.getWebsocketUser(sender);
+			LiveGamingUserDto cloesingConnectionUser = liveGamingUsersRepository.getWebsocketUser(sender);
 
 			if (cloesingConnectionUser.getPlayNowWithUser() != null
 					&& cloesingConnectionUser.getPlayNowWithUser() != "") {
 
-				GameUser cloesingConnectionUserGamePartner = liveGamingUsersRepository
+				LiveGamingUserDto cloesingConnectionUserGamePartner = liveGamingUsersRepository
 						.getWebsocketUser(cloesingConnectionUser.getPlayNowWithUser());
 
 				cloesingConnectionUserGamePartner.setPlayNowWithUser(null);
 				cloesingConnectionUserGamePartner.setCommunicationStatus(GameUserCommunicationStatus.WAIT_FOR_NEW_GAME);
 
-				GameMessage disconnectMsg = new GameMessage();
+				GameMessageDto disconnectMsg = new GameMessageDto();
 				disconnectMsg.setType(GameMessageType.USER_DISCONNECT);
 
 				webSocketSessionsRepository.sendToSession(cloesingConnectionUserGamePartner.getUsername(), sender,

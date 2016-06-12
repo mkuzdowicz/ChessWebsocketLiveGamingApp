@@ -1,6 +1,6 @@
 package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
-public class GameUser {
+public class LiveGamingUserDto {
 
 	private String username;
 	private long userIdInGameContext;
@@ -10,10 +10,10 @@ public class GameUser {
 	private String communicationStatus;
 	private String uniqueActualGameHash;
 
-	public GameUser() {
+	public LiveGamingUserDto() {
 	}
 
-	public GameUser(String username) {
+	public LiveGamingUserDto(String username) {
 		this.username = username;
 	}
 

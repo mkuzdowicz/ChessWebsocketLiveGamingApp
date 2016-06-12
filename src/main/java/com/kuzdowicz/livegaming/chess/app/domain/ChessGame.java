@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMove;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMoveDto;
 
 @Document(collection = "chessGames")
 public class ChessGame {
@@ -27,7 +27,7 @@ public class ChessGame {
 	private String whitePlayerName;
 	private String blackPlayerName;
 	private Boolean checkMate;
-	private List<ChessMove> listOfMoves;
+	private List<ChessMoveDto> listOfMoves;
 
 	public ChessGame() {
 		listOfMoves = new ArrayList<>();
@@ -105,11 +105,11 @@ public class ChessGame {
 		this.numberOfMoves = numberOfMoves;
 	}
 
-	public List<ChessMove> getListOfMoves() {
+	public List<ChessMoveDto> getListOfMoves() {
 		return listOfMoves;
 	}
 
-	public void setListOfMoves(List<ChessMove> listOfMoves) {
+	public void setListOfMoves(List<ChessMoveDto> listOfMoves) {
 		this.listOfMoves = listOfMoves;
 	}
 
