@@ -695,3 +695,7 @@ div#board img:hover {
 	opacity: 0.8;
 	cursor: pointer;
 }
+
+.table-accounts tr td {
+	padding: 5px !important;
+}

@@ -38,7 +38,7 @@ public class WebSocketSessionsRepository {
 	}
 
 	public void sendToAllConnectedSessions(String msg) {
-		for (String username : sessionsMap.keySet()) {
+		sessionsMap.keySet().forEach(username -> {
 			WebSocketSession userSession = sessionsMap.get(username);
 			try {
 				String jsonUsersList = gson.toJson(LiveGamingUsersRepository.gameUsersMap.values());
@@ -47,24 +47,23 @@ public class WebSocketSessionsRepository {
 			} catch (IOException e) {
 				logger.warn("exception occured: ", e);
 			}
-		}
+		});
 	}
 
 	public synchronized void sendToAllConnectedSessionsActualParticipantList() {
 
-		try {
-			String jsonUsersList = gson.toJson(LiveGamingUsersRepository.gameUsersMap.values());
-
-			for (String username : sessionsMap.keySet()) {
-				WebSocketSession userSession = sessionsMap.get(username);
-				if (userSession != null) {
-					TextMessage tm = new TextMessage(jsonUsersList.getBytes());
+		String jsonUsersList = gson.toJson(LiveGamingUsersRepository.gameUsersMap.values());
+		sessionsMap.keySet().forEach(username -> {
+			WebSocketSession userSession = sessionsMap.get(username);
+			if (userSession != null) {
+				TextMessage tm = new TextMessage(jsonUsersList.getBytes());
+				try {
 					userSession.sendMessage(tm);
+				} catch (Exception e) {
+					logger.warn("exception occured: ", e);
 				}
 			}
-		} catch (Exception e) {
-			logger.warn("exception occured: ", e);
-		}
+		});
 	}
 
 	public void sendToSession(String toUsernameName, String fromUsername, String message) {

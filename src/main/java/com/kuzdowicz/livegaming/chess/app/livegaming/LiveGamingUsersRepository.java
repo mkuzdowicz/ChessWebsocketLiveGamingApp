@@ -51,19 +51,15 @@ public class LiveGamingUsersRepository {
 	public synchronized void setChessPiecesColorForGamers(String toUsername, String fromUsername) {
 		GameUser invitingUser = gameUsersMap.get(fromUsername);
 		GameUser recievingUser = gameUsersMap.get(toUsername);
-
 		invitingUser.setChessColor(ChessColor.WHITE);
 		recievingUser.setChessColor(ChessColor.BLACK);
-
 	}
 
 	public synchronized void resetChessPiecesColorForGamers(String toUsername, String fromUsername) {
 		GameUser invitingUser = gameUsersMap.get(fromUsername);
 		GameUser recievingUser = gameUsersMap.get(toUsername);
-
 		invitingUser.setChessColor(null);
 		recievingUser.setChessColor(null);
-
 	}
 
 	public synchronized Boolean userListNotContainsUsername(String username) {

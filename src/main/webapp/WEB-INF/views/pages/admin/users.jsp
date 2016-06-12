@@ -19,22 +19,22 @@
 				class="table table-condensed table-striped table-bordered table-accounts">
 				<thead>
 					<tr>
-						<td style="width: 10px !important">registration date</td>
+						<td style="width: 100px">registration date</td>
 						<td>login</td>
 						<td>role</td>
-						<td style="width: 5px !important">is confirmed</td>
+						<td >is confirmed</td>
 						<td>name</td>
 						<td>lastname</td>
-						<td style="width: 10px !important">email</td>
+						<td >email</td>
 						<td>actions</td>
 					</tr>
 				</thead>
 				<tbody>
 					<c:forEach var="user" items="${users}">
 						<tr>
-							<td class="info text-center"><fmt:formatDate
-									pattern="dd-MM-yyyy" value="${user.registrationDate}" /></td>
-							<td class="text-center"><c:out value="${user.username}" /></td>
+							<td class="info"><fmt:formatDate pattern="dd-MM-yyyy"
+									value="${user.registrationDate}" /></td>
+							<td><c:out value="${user.username}" /></td>
 							<c:choose>
 								<c:when test="${user.role eq 1}">
 									<td class="danger"><p class="text-center">admin</p></td>
@@ -53,10 +53,10 @@
 									<td class="danger"><p class="text-center">no</p></td>
 								</c:otherwise>
 							</c:choose>
-							<td class="text-center"><c:out value="${user.name}" /></td>
-							<td class="text-center"><c:out value="${user.lastname}" /></td>
-							<td class="text-center"><c:out value="${user.email}" /></td>
-							<td class="text-center">
+							<td><c:out value="${user.name}" /></td>
+							<td><c:out value="${user.lastname}" /></td>
+							<td><c:out value="${user.email}" /></td>
+							<td>
 								<form action="/admin/users/show-edit-form" method="POST">
 									<input name="userId" value="<c:out value="${user.id}"/>"
 										type="hidden"> <input type="hidden"
