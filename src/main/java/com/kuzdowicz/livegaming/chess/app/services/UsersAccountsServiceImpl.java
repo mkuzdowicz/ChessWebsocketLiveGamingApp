@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserAccountCreationStatus;
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
-import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.db.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.db.repositories.UsersAccountsRepository;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditFormDto;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpFormDto;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Service
 public class UsersAccountsServiceImpl implements UsersAccountsService {

@@ -8,8 +8,8 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
-import com.kuzdowicz.livegaming.chess.app.livegaming.LiveChessGamesRepository;
+import com.kuzdowicz.livegaming.chess.app.db.domain.ChessGame;
+import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.LiveChessGamesRepository;
 
 public class LiveChessGamesRepositoryTest {
 

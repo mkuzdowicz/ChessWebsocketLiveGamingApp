@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming;
+package com.kuzdowicz.livegaming.chess.app.livegaming.repositories;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,7 +13,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.springframework.stereotype.Component;
 
-import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
+import com.kuzdowicz.livegaming.chess.app.db.domain.ChessGame;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMoveDto;
 
 @Component

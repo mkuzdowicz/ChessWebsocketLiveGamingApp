@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
+import com.kuzdowicz.livegaming.chess.app.db.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.db.repositories.UsersAccountsRepository;
 
 @Component
 public class CheckUsersCollectionScheduler {

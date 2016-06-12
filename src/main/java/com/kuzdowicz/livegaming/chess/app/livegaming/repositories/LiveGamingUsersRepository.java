@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming;
+package com.kuzdowicz.livegaming.chess.app.livegaming.repositories;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.kuzdowicz.livegaming.chess.app.constants.ChessColor;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
 
 @Component
@@ -40,6 +41,12 @@ public class LiveGamingUsersRepository {
 		LiveGamingUserDto gameUser = gameUsersMap.get(username);
 		gameUser.setCommunicationStatus(GameUserCommunicationStatus.WAIT_FOR_NEW_GAME);
 		gameUser.setPlayNowWithUser(null);
+	}
+
+	public void resetPlayersPairStateToWiatForNewGame(GameMessageDto messageObj) {
+		setComStatusWaitForNewGame(messageObj.getSendFrom());
+		setComStatusWaitForNewGame(messageObj.getSendTo());
+		setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
 	}
 
 	public synchronized void setComStatusIsPlaying(String toUsername, String fromUsername) {

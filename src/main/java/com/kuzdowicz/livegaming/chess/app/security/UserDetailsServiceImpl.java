@@ -6,9 +6,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.db.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.db.repositories.UsersAccountsRepository;
 import com.kuzdowicz.livegaming.chess.app.exceptions.UserAccountNotConfirmed;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

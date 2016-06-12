@@ -1,5 +1,7 @@
 package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
+import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
+
 public class LiveGamingUserDto {
 
 	private String username;
@@ -11,6 +13,15 @@ public class LiveGamingUserDto {
 	private String uniqueActualGameHash;
 
 	public LiveGamingUserDto() {
+	}
+
+	public boolean isPlayingWithAnyUser() {
+		if (this.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)
+				&& this.getPlayNowWithUser() != null && !this.getPlayNowWithUser().equals("")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public LiveGamingUserDto(String username) {

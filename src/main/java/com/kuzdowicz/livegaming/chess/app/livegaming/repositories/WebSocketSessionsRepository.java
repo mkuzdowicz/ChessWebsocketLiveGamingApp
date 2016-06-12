@@ -1,9 +1,10 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming;
+package com.kuzdowicz.livegaming.chess.app.livegaming.repositories;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import com.google.gson.Gson;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
 
 @Component
 public class WebSocketSessionsRepository {
@@ -51,6 +53,7 @@ public class WebSocketSessionsRepository {
 	}
 
 	public synchronized void sendToAllConnectedSessionsActualParticipantList() {
+		logger.debug("sendToAllConnectedSessionsActualParticipantList()");
 
 		String jsonUsersList = gson.toJson(LiveGamingUsersRepository.gameUsersMap.values());
 		sessionsMap.keySet().forEach(username -> {
@@ -84,6 +87,17 @@ public class WebSocketSessionsRepository {
 			return true;
 		}
 		return false;
+	}
+
+	public synchronized void sendMessageToOneUser(GameMessageDto message) {
+		logger.debug("sendMessageToOneUser()");
+		System.out.println(message.actualJsonString());
+
+		String toUsername = message.getSendTo();
+		String fromUsername = message.getSendFrom();
+		if (StringUtils.isNoneBlank(toUsername)) {
+			sendToSession(toUsername, fromUsername, message.actualJsonString());
+		}
 	}
 
 }

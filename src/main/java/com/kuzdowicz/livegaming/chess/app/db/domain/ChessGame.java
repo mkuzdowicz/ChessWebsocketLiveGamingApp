@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.domain;
+package com.kuzdowicz.livegaming.chess.app.db.domain;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMoveDto;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
+import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
 
 @Document(collection = "chessGames")
 public class ChessGame {
@@ -31,6 +33,27 @@ public class ChessGame {
 
 	public ChessGame() {
 		listOfMoves = new ArrayList<>();
+	}
+
+	public static ChessGame prepareAndReturnChessGameObjectAtGameStart(String actualChessGameUUID,
+			LiveGamingUserDto sendToObj, LiveGamingUserDto sendFromObj, GameMessageDto messageObj) {
+
+		ChessGame chessGame = new ChessGame();
+		chessGame.setUniqueGameHash(actualChessGameUUID);
+		chessGame.setBeginDate(new Date());
+		chessGame.setNumberOfMoves(0);
+
+		if (sendToObj.getChessColor().equals("white")) {
+			chessGame.setWhitePlayerName(sendToObj.getUsername());
+			chessGame.setBlackPlayerName(sendFromObj.getUsername());
+		} else {
+			chessGame.setWhitePlayerName(sendFromObj.getUsername());
+			chessGame.setBlackPlayerName(sendToObj.getUsername());
+		}
+
+		chessGame.setEndingGameFENString(messageObj.getFen());
+
+		return chessGame;
 	}
 
 	public Date getBeginDate() {

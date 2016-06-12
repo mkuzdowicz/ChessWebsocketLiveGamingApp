@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.constants.FormActionMessageType;
-import com.kuzdowicz.livegaming.chess.app.domain.ChessGame;
+import com.kuzdowicz.livegaming.chess.app.db.domain.ChessGame;
+import com.kuzdowicz.livegaming.chess.app.db.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditFormDto;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
-import com.kuzdowicz.livegaming.chess.app.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.services.UsersAccountsService;
 
 @Controller

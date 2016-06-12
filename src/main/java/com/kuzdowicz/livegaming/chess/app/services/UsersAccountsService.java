@@ -3,7 +3,7 @@ package com.kuzdowicz.livegaming.chess.app.services;
 import java.util.List;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserAccountCreationStatus;
-import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
+import com.kuzdowicz.livegaming.chess.app.db.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditFormDto;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpFormDto;
 

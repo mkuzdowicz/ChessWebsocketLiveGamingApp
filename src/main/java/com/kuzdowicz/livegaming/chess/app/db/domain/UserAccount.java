@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.domain;
+package com.kuzdowicz.livegaming.chess.app.db.domain;
 
 import java.util.Date;
 

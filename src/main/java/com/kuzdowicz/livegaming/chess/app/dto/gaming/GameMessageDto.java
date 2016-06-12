@@ -1,27 +1,19 @@
 package com.kuzdowicz.livegaming.chess.app.dto.gaming;
 
+import com.google.gson.GsonBuilder;
+
 public class GameMessageDto {
 
 	private String type;
-
 	private String fen;
-
 	private String sendTo;
-
 	private String sendFrom;
-
 	private String moveStatus;
-
 	private LiveGamingUserDto sendToObj;
-
 	private LiveGamingUserDto sendFromObj;
-
 	private Boolean checkMate;
-
 	private ChessMoveDto chessMove;
-
 	private String whiteColUsername;
-
 	private String blackColUsername;
 
 	public GameMessageDto() {
@@ -114,6 +106,10 @@ public class GameMessageDto {
 
 	public void setBlackColUsername(String blackColUsername) {
 		this.blackColUsername = blackColUsername;
+	}
+
+	public String actualJsonString() {
+		return new GsonBuilder().create().toJson(this);
 	}
 
 }

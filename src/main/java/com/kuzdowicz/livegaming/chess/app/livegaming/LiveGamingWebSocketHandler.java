@@ -14,6 +14,8 @@ import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
+import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.LiveGamingUsersRepository;
+import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.WebSocketSessionsRepository;
 
 @Component
 public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
@@ -22,12 +24,12 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 	private final WebSocketSessionsRepository webSocketSessionsRepository;
 	private final LiveGamingUsersRepository liveGamingUsersRepository;
-	private final GameMessageProtocolService gameMessageProtocol;
+	private final LiveGamingMessageSendingHandler gameMessageProtocol;
 	private final Gson gson;
 
 	@Autowired
 	public LiveGamingWebSocketHandler(WebSocketSessionsRepository webSocketSessionsRepository,
-			LiveGamingUsersRepository liveGamingUsersRepository, GameMessageProtocolService gameMessageProtocol,
+			LiveGamingUsersRepository liveGamingUsersRepository, LiveGamingMessageSendingHandler gameMessageProtocol,
 			Gson gson) {
 		this.webSocketSessionsRepository = webSocketSessionsRepository;
 		this.liveGamingUsersRepository = liveGamingUsersRepository;
@@ -55,9 +57,8 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		String msg = message.getPayload();
-		GameMessageDto gameMessage = gson.fromJson(msg, GameMessageDto.class);
-		gameMessageProtocol.proccessMessage(gameMessage, msg);
+		GameMessageDto gameMessage = gson.fromJson(message.getPayload(), GameMessageDto.class);
+		gameMessageProtocol.proccessMessage(gameMessage);
 	}
 
 	@Override
