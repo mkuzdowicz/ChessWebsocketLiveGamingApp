@@ -6,6 +6,8 @@
 <form:form method="POST" commandName="editForm" class="form-horizontal"
 	name="editYourAccountForm">
 
+	<form:input path="userId" type="hidden" />
+
 	<div class="form-group">
 		<label class="control-label col-sm-2">login</label>
 		<div class="col-sm-8">

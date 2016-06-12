@@ -124,6 +124,7 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 
 	@Override
 	public EditFormDto getUserByLoginAndBindToEditFormDto(String login) {
+		logger.debug("getUserByLoginAndBindToEditFormDto()");
 		UserAccount user = getUserByLogin(login);
 		EditFormDto editForm = new EditFormDto();
 		editForm.setUsername(user.getUsername());
@@ -138,6 +139,7 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 
 	@Override
 	public UserAccount editUserAccoutnAsAdmin(EditFormDto editForm, String userIdToEdit) {
+		logger.debug("editUserAccoutnAsAdmin()");
 		UserAccount u = getUserByIdAndBindWithEditForm(editForm, userIdToEdit);
 		Boolean setAsAdminFlag = editForm.getGrantAdminAuthorities();
 		u.setRole(setAsAdminFlag ? UserRoles.ADMIN.geNumericValue() : UserRoles.USER.geNumericValue());
@@ -154,7 +156,7 @@ public class UsersAccountsServiceImpl implements UsersAccountsService {
 	}
 
 	private UserAccount getUserByIdAndBindWithEditForm(EditFormDto editForm, String userId) {
-
+		logger.debug("getUserByIdAndBindWithEditForm()");
 		UserAccount userToEdit = getUserByPK(userId);
 		userToEdit.setName(editForm.getName());
 		userToEdit.setLastname(editForm.getLastname());

@@ -87,7 +87,11 @@
 			</security:authorize>
 		</div>
 
-		<sitemesh:write property='body' />
+		<div class="text-center main-wrapper">
+
+			<sitemesh:write property='body' />
+
+		</div>
 
 		<!-- CONTENT END -->
 
