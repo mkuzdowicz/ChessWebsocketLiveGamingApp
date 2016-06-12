@@ -1,11 +1,11 @@
 package com.kuzdowicz.livegaming.chess.app.controllers;
 
 import java.security.Principal;
-import java.util.Date;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.constants.FormActionMessageType;
+import com.kuzdowicz.livegaming.chess.app.constants.UserAccountCreationStatus;
 import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
 import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.EditForm;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
 import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
+import com.kuzdowicz.livegaming.chess.app.services.UsersAccountsService;
 
 @Controller
 @PropertySource("classpath:messages.properties")
@@ -37,18 +39,21 @@ public class AdminPanelController {
 	private final UsersAccountsRepository usersRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final Environment env;
+	private final UsersAccountsService usersAccountsService;
 
 	@Autowired
-	public AdminPanelController(UsersAccountsRepository usersRepository, PasswordEncoder passwordEncoder, Environment env) {
+	public AdminPanelController(UsersAccountsRepository usersRepository, PasswordEncoder passwordEncoder,
+			Environment env, UsersAccountsService usersAccountsService) {
 		this.usersRepository = usersRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.env = env;
+		this.usersAccountsService = usersAccountsService;
 	}
 
 	@RequestMapping(value = "/admin/users", method = RequestMethod.GET)
 	public ModelAndView getAllUsers(Principal principal) {
 		ModelAndView usersPage = new ModelAndView("pages/admin/users");
-		usersPage.addObject("users", usersRepository.findAll());
+		usersPage.addObject("users", usersAccountsService.all());
 		addBasicObjectsToModelAndView(usersPage, principal);
 		return usersPage;
 	}
@@ -57,27 +62,14 @@ public class AdminPanelController {
 	public ModelAndView showEditUserForm(@RequestParam("userId") String userId, EditForm editForm,
 			FormActionResultMsgDto formActionMsg, Principal principal) {
 
-		UserAccount user = usersRepository.findOne(userId);
 		ModelAndView userDetailPage = new ModelAndView("pages/admin/editUser");
-		bindUserObjectToEditFormDto(user, editForm);
+		if (StringUtils.isEmpty(editForm.getUsername())) {
+			editForm = usersAccountsService.getUserByIdAndBindToEditFormDto(userId);
+		}
 		userDetailPage.addObject("editForm", editForm);
 		userDetailPage.addObject("formActionMsg", formActionMsg);
-		userDetailPage.addObject("editUserActionUrl", "admin/users/editUser");
 		addBasicObjectsToModelAndView(userDetailPage, principal);
 		return userDetailPage;
-	}
-
-	private void bindUserObjectToEditFormDto(UserAccount user, EditForm editForm) {
-		if (user == null || editForm == null) {
-			return;
-		}
-		editForm.setUsername(user.getUsername());
-		editForm.setUserId(user.getId());
-		editForm.setEmail(user.getEmail());
-		editForm.setName(user.getName());
-		editForm.setLastname(user.getLastname());
-		editForm.setAccountConfirmed(user.getIsRegistrationConfirmed());
-		editForm.setGrantAdminAuthorities(user.getRole() == UserRoles.ADMIN.geNumericValue() ? true : false);
 	}
 
 	@RequestMapping(value = "/admin/users/edit-user", method = RequestMethod.POST)
@@ -92,7 +84,6 @@ public class AdminPanelController {
 		Boolean adminFlag = editForm.getGrantAdminAuthorities();
 		Boolean accountConfirmed = editForm.getAccountConfirmed();
 		String userId = editForm.getUserId();
-		String userLogin = editForm.getUsername();
 
 		Boolean changePasswordFlag = editForm.getChangePasswordFlag();
 		ModelAndView editFormSite = new ModelAndView("pages/admin/editUser");
@@ -105,7 +96,7 @@ public class AdminPanelController {
 
 		if (changePasswordFlag && !password.equals(confirmPassword)) {
 
-			return showEditUserForm(userLogin, editForm,
+			return showEditUserForm(userId, editForm,
 					FormActionResultMsgDto.createErrorMsg(env.getProperty("error.passwords.notequal")), principal);
 		}
 
@@ -116,10 +107,6 @@ public class AdminPanelController {
 		}
 
 		UserAccount user = usersRepository.findOne(userId);
-		if (user == null) {
-			return showEditUserForm(null, new EditForm(),
-					FormActionResultMsgDto.createErrorMsg(env.getProperty("error.fatal.error")), principal);
-		}
 		user.setName(name);
 		user.setLastname(lastname);
 		if (changePasswordFlag) {
@@ -139,9 +126,7 @@ public class AdminPanelController {
 	@RequestMapping(value = "/admin/users/remove", method = RequestMethod.POST)
 	public ModelAndView removeUser(@RequestParam("userId") String userId, Principal principal) {
 		logger.debug("removeUser()");
-
-		UserAccount user = usersRepository.findOne(userId);
-		usersRepository.delete(user);
+		usersAccountsService.deleteUserByPK(userId);
 		return getAllUsers(principal);
 	}
 
@@ -163,48 +148,33 @@ public class AdminPanelController {
 			Principal principal) {
 		logger.debug("addUser()");
 
-		if (result.hasErrors()) {
-			ModelAndView addUserPage = new ModelAndView("pages/admin/addUser");
-			addUserPage.addObject("signUpForm", signUpForm);
-			return addUserPage;
-		}
-
 		String userLogin = signUpForm.getUsername();
-		String plaintextPassword = signUpForm.getPassword();
+		String password = signUpForm.getPassword();
 		String confirmPassword = signUpForm.getConfirmPassword();
-		Boolean adminFlag = signUpForm.getGrantAdminAuthorities();
-		String email = signUpForm.getEmail();
 
-		if (!plaintextPassword.equals(confirmPassword)) {
+		if (result.hasErrors()) {
+			return getAddUserForm(signUpForm, new FormActionResultMsgDto(), principal);
+		}
+		if (!password.equals(confirmPassword)) {
 			return getAddUserForm(//
 					signUpForm, //
 					FormActionResultMsgDto.createErrorMsg(env.getProperty("error.passwords.notequal")), //
 					principal);
 		}
 
-		UserAccount user = new UserAccount();
-		user.setUsername(userLogin);
-		user.setRole(adminFlag ? UserRoles.ADMIN.geNumericValue() : UserRoles.USER.geNumericValue());
-		user.setPassword(passwordEncoder.encode(plaintextPassword));
-		user.setEmail(email);
-		user.setIsRegistrationConfirmed(true);
-		user.setRegistrationDate(new Date());
-
-		UserAccount updateResult = usersRepository.insert(user);
-
-		if (updateResult != null) {
-			return getAddUserForm(//
-					signUpForm, //
-					FormActionResultMsgDto.createErrorMsg(env.getProperty("success.user.created")), //
-					principal);
-
-		} else {
+		UserAccountCreationStatus accCreationStatus = usersAccountsService.createNewAccountAsAdmin(signUpForm);
+		if (accCreationStatus.equals(UserAccountCreationStatus.NOT_CREATED_LOGIN_TAKEN)) {
 			String msg = "login " + userLogin + " allready exists!";
 			return getAddUserForm(//
 					signUpForm, //
 					FormActionResultMsgDto.createErrorMsg(msg), //
 					principal);
 		}
+
+		return getAddUserForm(//
+				signUpForm, //
+				FormActionResultMsgDto.createSuccessMsg(env.getProperty("success.user.created")), //
+				principal);
 
 	}
 

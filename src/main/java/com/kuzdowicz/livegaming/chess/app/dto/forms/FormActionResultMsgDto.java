@@ -38,5 +38,9 @@ public class FormActionResultMsgDto {
 	public static FormActionResultMsgDto createErrorMsg(String msg) {
 		return new FormActionResultMsgDto(FormActionMessageType.ERROR, msg);
 	}
+	
+	public static FormActionResultMsgDto empty() {
+		return new FormActionResultMsgDto();
+	}
 
 }

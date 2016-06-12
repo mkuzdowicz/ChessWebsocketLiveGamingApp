@@ -83,12 +83,6 @@
 			password
 		</label>
 	</div>
-	<div class="form-group">
-		<div class="col-sm-offset-2 col-sm-8">
-			<input class="btn btn-success btn-block" type="submit"
-				value="change data" />
-		</div>
-	</div>
 
 	<input type="hidden" name="${_csrf.parameterName}"
 		value="${_csrf.token}" />
@@ -105,6 +99,13 @@
 			</c:if>
 		</div>
 	</c:if>
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-8">
+			<input class="btn btn-success btn-block" type="submit"
+				value="change data" />
+		</div>
+	</div>
 
 </form:form>
 <script>

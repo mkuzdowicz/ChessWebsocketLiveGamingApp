@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -131,15 +129,11 @@ public class UserPanelController {
 	@RequestMapping(value = "/user/your-chessgames", method = RequestMethod.GET)
 	public ModelAndView userGamesSite(Principal principal) {
 
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String userLogin = auth.getName();
-
+		String userLogin = principal.getName();
 		ModelAndView userGamesSite = new ModelAndView("pages/user/userGames");
 		addBasicObjectsToModelAndView(userGamesSite, principal);
 		List<ChessGame> userChessGames = chessGamesRepository.findAllByWhitePlayerNameOrBlackPlayerName(userLogin);
-
 		UserAccount userInfo = usersRepository.findOneByUsername(userLogin);
-
 		userGamesSite.addObject("userChessGames", userChessGames);
 		userGamesSite.addObject("user", userInfo);
 

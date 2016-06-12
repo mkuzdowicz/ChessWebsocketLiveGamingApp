@@ -1,5 +1,7 @@
 package com.kuzdowicz.livegaming.chess.app.services;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -17,15 +19,15 @@ import com.kuzdowicz.livegaming.chess.app.constants.MailSubject;
 
 @Service
 @PropertySource("classpath:messages.properties")
-public class MailService {
+public class AccountRegistrationMailServiceImpl implements AccountRegistrationMailService {
 
-	private final static Logger logger = LoggerFactory.getLogger(MailService.class);
+	private final static Logger logger = LoggerFactory.getLogger(AccountRegistrationMailServiceImpl.class);
 
 	private final JavaMailSender mailSender;
 	private final Environment env;
 
 	@Autowired
-	public MailService(JavaMailSenderImpl mailSender, Environment env) {
+	public AccountRegistrationMailServiceImpl(JavaMailSenderImpl mailSender, Environment env) {
 		this.mailSender = mailSender;
 		this.env = env;
 	}
@@ -83,29 +85,26 @@ public class MailService {
 		return sb.toString();
 	}
 
-	private void sendMail(String to, String from, String subject, String messageContent) {
+	private void sendMail(String to, String from, String subject, String messageContent)
+			throws AddressException, MessagingException {
 		logger.debug("sendMail()");
 
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 
 		MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "UTF-8");
 
-		try {
-			mimeMessageHelper.setTo(new InternetAddress(to));
-			mimeMessageHelper.setFrom(new InternetAddress(from));
-			mimeMessageHelper.setSubject(subject);
-			mimeMessage.setContent(messageContent, "text/html; charset=utf-8");
-
-		} catch (Exception e) {
-			logger.warn("Exception: ", e);
-		}
+		mimeMessageHelper.setTo(new InternetAddress(to));
+		mimeMessageHelper.setFrom(new InternetAddress(from));
+		mimeMessageHelper.setSubject(subject);
+		mimeMessage.setContent(messageContent, "text/html; charset=utf-8");
 
 		mailSender.send(mimeMessage);
 		logger.debug("send email to " + to);
 
 	}
 
-	public void sendRegistrationMail(String toMailAddress, String username, String randomHashForLink) {
+	public void sendRegistrationMail(String toMailAddress, String username, String randomHashForLink)
+			throws AddressException, MessagingException {
 
 		String fromMailAddress = env.getProperty("mail.default.message.from");
 

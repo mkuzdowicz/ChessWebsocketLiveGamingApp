@@ -43,13 +43,6 @@
 		</label>
 	</div>
 
-	<div class="form-group">
-		<div class="col-sm-offset-2 col-sm-8">
-			<input class="btn btn-success btn-block" type="submit"
-				value="add account" />
-		</div>
-	</div>
-
 	<c:if test="${ formActionMsg ne null }">
 		<div class="form-group col-sm-12">
 			<c:if test="${ formActionMsg.type eq errorMsg }">
@@ -60,7 +53,14 @@
 			</c:if>
 		</div>
 	</c:if>
-	
+
 	<input type="hidden" name="${_csrf.parameterName}"
 		value="${_csrf.token}" />
+
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-8">
+			<input class="btn btn-success btn-block" type="submit"
+				value="add account" />
+		</div>
+	</div>
 </form:form>

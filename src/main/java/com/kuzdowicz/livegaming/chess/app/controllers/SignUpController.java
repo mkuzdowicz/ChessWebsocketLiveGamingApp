@@ -1,20 +1,14 @@
 package com.kuzdowicz.livegaming.chess.app.controllers;
 
 import java.security.Principal;
-import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,113 +16,72 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kuzdowicz.livegaming.chess.app.constants.UserAccountCreationStatus;
-import com.kuzdowicz.livegaming.chess.app.constants.UserRoles;
-import com.kuzdowicz.livegaming.chess.app.domain.UserAccount;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.FormActionResultMsgDto;
 import com.kuzdowicz.livegaming.chess.app.dto.forms.SignUpForm;
-import com.kuzdowicz.livegaming.chess.app.repositories.UsersAccountsRepository;
-import com.kuzdowicz.livegaming.chess.app.services.MailService;
+import com.kuzdowicz.livegaming.chess.app.services.UsersAccountsService;
 
 @Controller
 @PropertySource("classpath:messages.properties")
 public class SignUpController {
 
-	private final static Logger logger = LoggerFactory.getLogger(SignUpController.class);
-
-	private final UsersAccountsRepository usersRepository;
-	private final PasswordEncoder passwordEncoder;
-	private final MailService mailService;
+	private final UsersAccountsService usersAccountsService;
 	private final Environment env;
 
 	@Autowired
-	public SignUpController(UsersAccountsRepository usersRepository, PasswordEncoder passwordEncoder, MailService mailService,
-			Environment env) {
-		this.usersRepository = usersRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.mailService = mailService;
+	public SignUpController(UsersAccountsService usersAccountsService, Environment env) {
+		this.usersAccountsService = usersAccountsService;
 		this.env = env;
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
-	public ModelAndView getSignUpForm(SignUpForm signUpFomr, FormActionResultMsgDto formActionMsg, Principal principa) {
+	public ModelAndView getSignUpForm(SignUpForm signUpForm, FormActionResultMsgDto formActionMsg, Principal principa) {
 
 		ModelAndView signUpSite = new ModelAndView("pages/public/signup");
 		signUpSite.addObject("formActionMsg", formActionMsg);
-		signUpSite.addObject("signUpFomr", signUpFomr);
+		signUpSite.addObject("signUpForm", signUpForm);
 		addBasicObjectsToModelAndView(signUpSite, principa);
 		return signUpSite;
 	}
 
-	@RequestMapping(value = "/signup/account/creation", method = RequestMethod.GET)
-	public ModelAndView getSiteAccountCreationInfo(String userCreationMsg, boolean created, String userMail,
-			String userPassword, Principal principa) {
+	private ModelAndView accountCreatedInfoPage(String userMail, Principal principa) {
 
 		ModelAndView accountCreatedPage = new ModelAndView("pages/public/accountCreatedMsgPage");
-
 		accountCreatedPage.addObject("userMail", userMail);
 		addBasicObjectsToModelAndView(accountCreatedPage, principa);
 		return accountCreatedPage;
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpFomr") SignUpForm signUpFomr, BindingResult result,
-			Principal principa) {
+	public ModelAndView addUserAction(@Valid @ModelAttribute("signUpForm") SignUpForm signUpForm, BindingResult result,
+			Principal principal) {
+
+		String userPassword = signUpForm.getPassword();
+		String confirmPassword = signUpForm.getConfirmPassword();
 
 		if (result.hasErrors()) {
-			ModelAndView signUpSite = new ModelAndView("pages/public/signup");
-			signUpSite.addObject("signUpFomr", signUpFomr);
-			return signUpSite;
+			return getSignUpForm(signUpForm, FormActionResultMsgDto.empty(), principal);
 		}
-		String userPassword = signUpFomr.getPassword();
-		String confirmPassword = signUpFomr.getConfirmPassword();
 
 		if (!userPassword.equals(confirmPassword)) {
 			FormActionResultMsgDto formActionMsg = FormActionResultMsgDto
 					.createErrorMsg(env.getProperty("error.passwords.notequal"));
-			return getSignUpForm(signUpFomr, formActionMsg, principa);
+			return getSignUpForm(signUpForm, formActionMsg, principal);
 		}
 
-		UserAccountCreationStatus creationStatus = createAccount(signUpFomr, principa);
+		UserAccountCreationStatus creationStatus = usersAccountsService.createNewAccountAsUser(signUpForm);
+		if (creationStatus.equals(UserAccountCreationStatus.NOT_CREATED_LOGIN_TAKEN)) {
+			String msg = "login " + signUpForm.getUsername() + " allready exists!";
+			FormActionResultMsgDto formActionMsg = FormActionResultMsgDto.createErrorMsg(msg);
+			return getSignUpForm(signUpForm, formActionMsg, principal);
+		}
+
 		if (creationStatus.equals(UserAccountCreationStatus.FAIL)) {
 			FormActionResultMsgDto formActionMsg = FormActionResultMsgDto
 					.createErrorMsg(env.getProperty("error.confirmation.mail"));
-			return getSignUpForm(signUpFomr, formActionMsg, principa);
-		}
-		ModelAndView accountCreatedPage = new ModelAndView("pages/public/accountCreatedMsgPage");
-		accountCreatedPage.addObject("userMail", signUpFomr.getEmail());
-		addBasicObjectsToModelAndView(accountCreatedPage, principa);
-
-		return accountCreatedPage;
-	}
-
-	@Transactional
-	private UserAccountCreationStatus createAccount(SignUpForm signUpFomr, Principal principa) {
-
-		String userLogin = signUpFomr.getUsername();
-		String userEmail = signUpFomr.getEmail();
-		String userPassword = signUpFomr.getPassword();
-
-		UserAccount newUser = new UserAccount();
-		newUser.setUsername(userLogin);
-		newUser.setPassword(passwordEncoder.encode(userPassword));
-		newUser.setRole(UserRoles.USER.geNumericValue());
-		newUser.setEmail(userEmail);
-
-		String randomHashString = UUID.randomUUID().toString();
-
-		newUser.setRegistrationHashString(randomHashString);
-		newUser.setIsRegistrationConfirmed(false);
-		newUser.setRegistrationDate(new Date());
-
-		try {
-			mailService.sendRegistrationMail(userEmail, userLogin, randomHashString);
-		} catch (Exception e) {
-			logger.warn("exception occured: ", e);
-			return UserAccountCreationStatus.FAIL;
+			return getSignUpForm(signUpForm, formActionMsg, principal);
 		}
 
-		usersRepository.insert(newUser);
-		return UserAccountCreationStatus.CREATED;
+		return accountCreatedInfoPage(signUpForm.getEmail(), principal);
 	}
 
 	private void addBasicObjectsToModelAndView(ModelAndView mav, Principal principal) {
