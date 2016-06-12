@@ -2,8 +2,8 @@
 
 web application for live chess gaming
 
-* Project use Websockets, Spring MVC, Spring Security, MongoDB, Ajax, Jquery, Javascript, Bootstrap, Maven
-* Spring boot, Spring data
+* Project use Websockets, Spring MVC, Spring Security, MongoDB, JQuery, Javascript, Bootstrap, Maven
+* Spring boot, Spring data, Java 8
 
 ## how to run the application
 
