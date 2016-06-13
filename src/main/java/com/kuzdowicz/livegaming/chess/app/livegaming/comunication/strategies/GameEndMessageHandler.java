@@ -21,31 +21,32 @@ public class GameEndMessageHandler implements GameMessagesHandler {
 			LiveGamingContextAdapter gamingCtxAdapter) {
 
 		String messageType = messageDto.getType();
-		LiveGamingUsersRegistry liveGamingUsersRepository = gamingCtxAdapter.getLiveGamingUsersRepository();
-		WebSocketSessionsRegistry webSocketSessionsRepository = gamingCtxAdapter.getWebSocketSessionsRepository();
+		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
+		WebSocketSessionsRegistry webSocketSessionsRegistry = gamingCtxAdapter.getWebSocketSessionsRegistry();
 
 		if (messageType.equals(GameMessageType.QUIT_GAME) || messageType.equals(GameMessageType.GAME_OVER)) {
 			saveStatisticsDataToDbIfQuitGameOrIfCheckMate(messageDto, gamingCtxAdapter);
 		}
 
-		liveGamingUsersRepository.resetPlayersPairStateToWiatForNewGame(messageDto);
-		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
+		liveGamingUsersRegistry.resetPlayersPairStateToWiatForNewGame(messageDto);
+		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 
 	}
 
 	private void saveStatisticsDataToDbIfQuitGameOrIfCheckMate(GameMessageDto messageDto,
 			LiveGamingContextAdapter gamingCtxAdapter) {
 
-		LiveGamingUsersRegistry liveGamingUsersRepository = gamingCtxAdapter.getLiveGamingUsersRepository();
-		LiveChessGamesRegistry liveChessGamesRepository = gamingCtxAdapter.getLiveChessGamesRepository();
+		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
+		LiveChessGamesRegistry liveChessGamesRegistry = gamingCtxAdapter.getLiveChessGamesRegistry();
+		
 		UsersAccountsRepository usersRepository = gamingCtxAdapter.getUsersRepository();
 		ChessGamesRepository chessGamesRepository = gamingCtxAdapter.getChessGamesRepository();
 
-		LiveGamingUserDto webSocketUserObj = liveGamingUsersRepository.getWebsocketUser(messageDto.getSendFrom());
-		ChessGame game = liveChessGamesRepository.getGameByUniqueHashId(webSocketUserObj.getUniqueActualGameHash());
+		LiveGamingUserDto webSocketUserObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendFrom());
+		ChessGame game = liveChessGamesRegistry.getGameByUniqueHashId(webSocketUserObj.getUniqueActualGameHash());
 		game.setEndDate(new Date());
 		game.setEndingGameFENString(messageDto.getFen());
-		liveChessGamesRepository.calculateAndSetTimeDurationBeetwenGameBeginAndEnd(game);
+		liveChessGamesRegistry.calculateAndSetTimeDurationBeetwenGameBeginAndEnd(game);
 
 		if (messageDto.getCheckMate() != null && messageDto.getCheckMate() == true) {
 			game.setCheckMate(true);

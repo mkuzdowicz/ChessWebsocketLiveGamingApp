@@ -23,21 +23,21 @@ public class GameInvitationAgreementMessageHandler implements GameMessagesHandle
 			LiveGamingContextAdapter gamingCtxAdapter) {
 		logger.debug("reactToMessages()");
 
-		LiveGamingUsersRegistry liveGamingUsersRepository = gamingCtxAdapter.getLiveGamingUsersRepository();
-		WebSocketSessionsRegistry webSocketSessionsRepository = gamingCtxAdapter.getWebSocketSessionsRepository();
-		LiveChessGamesRegistry liveChessGamesRepository = gamingCtxAdapter.getLiveChessGamesRepository();
+		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
+		WebSocketSessionsRegistry webSocketSessionsRegistry = gamingCtxAdapter.getWebSocketSessionsRegistry();
+		LiveChessGamesRegistry liveChessGamesRegistry = gamingCtxAdapter.getLiveChessGamesRegistry();
 
 		String actualChessGameUUID = UUID.randomUUID().toString();
 
-		liveGamingUsersRepository.setComStatusIsPlaying(messageDto.getSendTo(), messageDto.getSendFrom());
-		liveGamingUsersRepository.setComStatusIsPlaying(messageDto.getSendFrom(), messageDto.getSendTo());
+		liveGamingUsersRegistry.setComStatusIsPlaying(messageDto.getSendTo(), messageDto.getSendFrom());
+		liveGamingUsersRegistry.setComStatusIsPlaying(messageDto.getSendFrom(), messageDto.getSendTo());
 
-		LiveGamingUserDto sendToObj = liveGamingUsersRepository.getWebsocketUser(messageDto.getSendTo());
+		LiveGamingUserDto sendToObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
 
 		sendToObj.setUniqueActualGameHash(actualChessGameUUID);
 		messageDto.setSendToObj(sendToObj);
 
-		LiveGamingUserDto sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageDto.getSendFrom());
+		LiveGamingUserDto sendFromObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendFrom());
 
 		sendFromObj.setUniqueActualGameHash(actualChessGameUUID);
 		messageDto.setSendFromObj(sendFromObj);
@@ -46,9 +46,9 @@ public class GameInvitationAgreementMessageHandler implements GameMessagesHandle
 		ChessGame newChessGame = ChessGame.prepareAndReturnChessGameObjectAtGameStart(actualChessGameUUID, sendToObj,
 				sendFromObj, messageDto);
 
-		liveChessGamesRepository.addNewGame(newChessGame);
-		webSocketSessionsRepository.sendMessageToOneUser(messageDto);
-		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
+		liveChessGamesRegistry.addNewGame(newChessGame);
+		webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
+		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 
 	}
 

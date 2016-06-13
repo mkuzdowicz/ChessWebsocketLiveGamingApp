@@ -20,24 +20,24 @@ public class ChessMoveMessageHandler implements GameMessagesHandler {
 	public synchronized void reactToMessages(GameMessageDto messageDto,
 			LiveGamingContextAdapter gamingCtxAdapter) {
 
-		LiveGamingUsersRegistry liveGamingUsersRepository = gamingCtxAdapter.getLiveGamingUsersRepository();
-		WebSocketSessionsRegistry webSocketSessionsRepository = gamingCtxAdapter.getWebSocketSessionsRepository();
-		LiveChessGamesRegistry liveChessGamesRepository = gamingCtxAdapter.getLiveChessGamesRepository();
+		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
+		WebSocketSessionsRegistry webSocketSessionsRegistry = gamingCtxAdapter.getWebSocketSessionsRegistry();
+		LiveChessGamesRegistry liveChessGamesRegistry = gamingCtxAdapter.getLiveChessGamesRegistry();
 
 		String fromUsername = messageDto.getSendFrom();
-		LiveGamingUserDto fromUser = liveGamingUsersRepository.getWebsocketUser(fromUsername);
+		LiveGamingUserDto fromUser = liveGamingUsersRegistry.getWebsocketUser(fromUsername);
 
 		String toUsername = messageDto.getSendTo();
-		LiveGamingUserDto toUser = liveGamingUsersRepository.getWebsocketUser(toUsername);
+		LiveGamingUserDto toUser = liveGamingUsersRegistry.getWebsocketUser(toUsername);
 
 		if (toUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)) {
 
 			if (userONEPlayWithUserTWO(fromUser, toUser)) {
 
 				ChessMoveDto currentMove = messageDto.getChessMove();
-				liveChessGamesRepository.addActualMoveToThisGameObject(toUser.getUniqueActualGameHash(), currentMove);
-				liveChessGamesRepository.incrementNumberOfMoves(toUser.getUniqueActualGameHash());
-				webSocketSessionsRepository.sendMessageToOneUser(messageDto);
+				liveChessGamesRegistry.addActualMoveToThisGameObject(toUser.getUniqueActualGameHash(), currentMove);
+				liveChessGamesRegistry.incrementNumberOfMoves(toUser.getUniqueActualGameHash());
+				webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
 
 			} else {
 				logger.debug(messageDto.getSendFrom()

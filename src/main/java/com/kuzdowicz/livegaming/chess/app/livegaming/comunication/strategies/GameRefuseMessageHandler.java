@@ -11,13 +11,13 @@ public class GameRefuseMessageHandler implements GameMessagesHandler {
 	public synchronized void reactToMessages(GameMessageDto messageDto,
 			LiveGamingContextAdapter gamingCtxAdapter) {
 
-		WebSocketSessionsRegistry webSocketSessionsRepository = gamingCtxAdapter.getWebSocketSessionsRepository();
-		LiveGamingUsersRegistry liveGamingUsersRepository = gamingCtxAdapter.getLiveGamingUsersRepository();
+		WebSocketSessionsRegistry webSocketSessionsRegistry = gamingCtxAdapter.getWebSocketSessionsRegistry();
+		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
 
-		webSocketSessionsRepository.sendMessageToOneUser(messageDto);
+		webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
 		
-		liveGamingUsersRepository.resetPlayersPairStateToWiatForNewGame(messageDto);
-		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
+		liveGamingUsersRegistry.resetPlayersPairStateToWiatForNewGame(messageDto);
+		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 
 	}
 

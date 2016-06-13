@@ -19,33 +19,33 @@ public class GameInvitationMessageHandler implements GameMessagesHandler {
 	@Override
 	public synchronized void reactToMessages(GameMessageDto messageDto, LiveGamingContextAdapter gamingCtxAdapter) {
 
-		LiveGamingUsersRegistry liveGamingUsersRepository = gamingCtxAdapter.getLiveGamingUsersRepository();
-		WebSocketSessionsRegistry webSocketSessionsRepository = gamingCtxAdapter.getWebSocketSessionsRepository();
+		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
+		WebSocketSessionsRegistry webSocketSessionsRegistry = gamingCtxAdapter.getWebSocketSessionsRegistry();
 
-		LiveGamingUserDto invitedUser = liveGamingUsersRepository.getWebsocketUser(messageDto.getSendTo());
+		LiveGamingUserDto invitedUser = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
 
 		if (invitedUser != null
 				&& !invitedUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_DURING_HANDSHAKE)
 				&& !invitedUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)) {
 
-			liveGamingUsersRepository.setComStatusIsDuringHandshake(messageDto.getSendFrom());
-			liveGamingUsersRepository.setComStatusIsDuringHandshake(messageDto.getSendTo());
-			liveGamingUsersRepository.setChessPiecesColorForGamers(messageDto.getSendTo(), messageDto.getSendFrom());
+			liveGamingUsersRegistry.setComStatusIsDuringHandshake(messageDto.getSendFrom());
+			liveGamingUsersRegistry.setComStatusIsDuringHandshake(messageDto.getSendTo());
+			liveGamingUsersRegistry.setChessPiecesColorForGamers(messageDto.getSendTo(), messageDto.getSendFrom());
 
-			LiveGamingUserDto sendToObj = liveGamingUsersRepository.getWebsocketUser(messageDto.getSendTo());
+			LiveGamingUserDto sendToObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
 			messageDto.setSendToObj(sendToObj);
 
-			LiveGamingUserDto sendFromObj = liveGamingUsersRepository.getWebsocketUser(messageDto.getSendFrom());
+			LiveGamingUserDto sendFromObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendFrom());
 			messageDto.setSendFromObj(sendFromObj);
 
-			webSocketSessionsRepository.sendMessageToOneUser(messageDto);
-			webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
+			webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
+			webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 
 		} else {
 			logger.debug("invited user is already playing, is during handshake or is null");
 			GameMessageDto tryLaterMsg = new GameMessageDto();
 			tryLaterMsg.setType(GameMessageType.TRY_LATER);
-			webSocketSessionsRepository.sendToSession(messageDto.getSendFrom(), "server",
+			webSocketSessionsRegistry.sendToSession(messageDto.getSendFrom(), "server",
 					new GsonBuilder().create().toJson(tryLaterMsg));
 		}
 

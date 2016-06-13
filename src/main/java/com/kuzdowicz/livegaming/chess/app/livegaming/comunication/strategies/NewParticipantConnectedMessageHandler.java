@@ -10,8 +10,8 @@ public class NewParticipantConnectedMessageHandler implements GameMessagesHandle
 	public synchronized void reactToMessages(GameMessageDto messageDto,
 			LiveGamingContextAdapter gamingCtxAdapter) {
 		
-		WebSocketSessionsRegistry webSocketSessionsRepository = gamingCtxAdapter.getWebSocketSessionsRepository();
-		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
+		WebSocketSessionsRegistry webSocketSessionsRegistry = gamingCtxAdapter.getWebSocketSessionsRegistry();
+		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 	}
 
 }
