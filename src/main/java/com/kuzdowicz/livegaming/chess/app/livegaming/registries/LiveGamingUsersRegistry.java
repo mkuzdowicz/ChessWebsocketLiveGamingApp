@@ -43,7 +43,7 @@ public class LiveGamingUsersRegistry {
 		gameUser.setPlayNowWithUser(null);
 	}
 
-	public void resetPlayersPairStateToWiatForNewGame(GameMessageDto messageObj) {
+	public void setPlayersInPairWiatForNewGameState(GameMessageDto messageObj) {
 		setComStatusWaitForNewGame(messageObj.getSendFrom());
 		setComStatusWaitForNewGame(messageObj.getSendTo());
 		setChessPiecesColorForGamers(messageObj.getSendTo(), messageObj.getSendFrom());
@@ -67,6 +67,17 @@ public class LiveGamingUsersRegistry {
 		LiveGamingUserDto recievingUser = gameUsersMap.get(toUsername);
 		invitingUser.setChessColor(null);
 		recievingUser.setChessColor(null);
+	}
+
+	public void setPlayersPairInInvitationState(GameMessageDto messageDto) {
+		setComStatusIsDuringHandshake(messageDto.getSendFrom());
+		setComStatusIsDuringHandshake(messageDto.getSendTo());
+		setChessPiecesColorForGamers(messageDto.getSendTo(), messageDto.getSendFrom());
+	}
+
+	public void setPlayersPairInGameStartState(GameMessageDto messageDto) {
+		setComStatusIsPlaying(messageDto.getSendTo(), messageDto.getSendFrom());
+		setComStatusIsPlaying(messageDto.getSendFrom(), messageDto.getSendTo());
 	}
 
 	public synchronized Boolean userListNotContainsUsername(String username) {

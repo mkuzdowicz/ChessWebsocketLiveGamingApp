@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
 import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
-import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
 import com.kuzdowicz.livegaming.chess.app.livegaming.LiveGamingContextAdapter;
@@ -24,19 +23,16 @@ public class GameInvitationMessageHandler implements GameMessagesHandler {
 
 		LiveGamingUserDto invitedUser = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
 
-		if (invitedUser != null
-				&& !invitedUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_DURING_HANDSHAKE)
-				&& !invitedUser.getCommunicationStatus().equals(GameUserCommunicationStatus.IS_PLAYING)) {
+		if (invitedUser != null && invitedUser.isInReadyForInvitationState()) {
 
-			liveGamingUsersRegistry.setComStatusIsDuringHandshake(messageDto.getSendFrom());
-			liveGamingUsersRegistry.setComStatusIsDuringHandshake(messageDto.getSendTo());
-			liveGamingUsersRegistry.setChessPiecesColorForGamers(messageDto.getSendTo(), messageDto.getSendFrom());
+			liveGamingUsersRegistry.setPlayersPairInInvitationState(messageDto);
 
-			LiveGamingUserDto sendToObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
-			messageDto.setSendToObj(sendToObj);
-
-			LiveGamingUserDto sendFromObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendFrom());
-			messageDto.setSendFromObj(sendFromObj);
+			// LiveGamingUserDto sendToObj =
+			// liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
+			// messageDto.setSendToObj(sendToObj);
+			// LiveGamingUserDto sendFromObj =
+			// liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendFrom());
+			// messageDto.setSendFromObj(sendFromObj);
 
 			webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
 			webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();

@@ -19,34 +19,28 @@ public class GameInvitationAgreementMessageHandler implements GameMessagesHandle
 	private final static Logger logger = LoggerFactory.getLogger(GameInvitationAgreementMessageHandler.class);
 
 	@Override
-	public synchronized void reactToMessages(GameMessageDto messageDto,
-			LiveGamingContextAdapter gamingCtxAdapter) {
+	public synchronized void reactToMessages(GameMessageDto messageDto, LiveGamingContextAdapter gamingCtxAdapter) {
 		logger.debug("reactToMessages()");
 
 		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
 		WebSocketSessionsRegistry webSocketSessionsRegistry = gamingCtxAdapter.getWebSocketSessionsRegistry();
 		LiveChessGamesRegistry liveChessGamesRegistry = gamingCtxAdapter.getLiveChessGamesRegistry();
 
-		String actualChessGameUUID = UUID.randomUUID().toString();
-
-		liveGamingUsersRegistry.setComStatusIsPlaying(messageDto.getSendTo(), messageDto.getSendFrom());
-		liveGamingUsersRegistry.setComStatusIsPlaying(messageDto.getSendFrom(), messageDto.getSendTo());
-
 		LiveGamingUserDto sendToObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
-
-		sendToObj.setUniqueActualGameHash(actualChessGameUUID);
-		messageDto.setSendToObj(sendToObj);
-
 		LiveGamingUserDto sendFromObj = liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendFrom());
-
+		String actualChessGameUUID = UUID.randomUUID().toString();
+		sendToObj.setUniqueActualGameHash(actualChessGameUUID);
 		sendFromObj.setUniqueActualGameHash(actualChessGameUUID);
+		messageDto.setSendToObj(sendToObj);
 		messageDto.setSendFromObj(sendFromObj);
 		messageDto.setMoveStatus(ChessMoveStatus.WHITE_TO_MOVE);
-
+		
 		ChessGame newChessGame = ChessGame.prepareAndReturnChessGameObjectAtGameStart(actualChessGameUUID, sendToObj,
 				sendFromObj, messageDto);
 
+		liveGamingUsersRegistry.setPlayersPairInGameStartState(messageDto);
 		liveChessGamesRegistry.addNewGame(newChessGame);
+
 		webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
 		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 

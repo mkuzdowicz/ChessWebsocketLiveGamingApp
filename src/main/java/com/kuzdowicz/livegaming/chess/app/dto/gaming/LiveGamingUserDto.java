@@ -24,6 +24,18 @@ public class LiveGamingUserDto {
 		}
 	}
 
+	public boolean isNotDuringHandShake() {
+		return !(this.communicationStatus.equals(GameUserCommunicationStatus.IS_DURING_HANDSHAKE));
+	}
+
+	public boolean isNotPlayingNow() {
+		return !(this.communicationStatus.equals(GameUserCommunicationStatus.IS_PLAYING));
+	}
+
+	public boolean isInReadyForInvitationState() {
+		return isNotDuringHandShake() && isNotPlayingNow();
+	}
+
 	public LiveGamingUserDto(String username) {
 		this.username = username;
 	}

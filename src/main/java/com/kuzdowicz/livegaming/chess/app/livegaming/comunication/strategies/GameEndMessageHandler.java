@@ -28,7 +28,7 @@ public class GameEndMessageHandler implements GameMessagesHandler {
 			saveStatisticsDataToDbIfQuitGameOrIfCheckMate(messageDto, gamingCtxAdapter);
 		}
 
-		liveGamingUsersRegistry.resetPlayersPairStateToWiatForNewGame(messageDto);
+		liveGamingUsersRegistry.setPlayersInPairWiatForNewGameState(messageDto);
 		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 
 	}

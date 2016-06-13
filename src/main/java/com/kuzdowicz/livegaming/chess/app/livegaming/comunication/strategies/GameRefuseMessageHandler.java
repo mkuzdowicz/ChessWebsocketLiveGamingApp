@@ -16,7 +16,7 @@ public class GameRefuseMessageHandler implements GameMessagesHandler {
 
 		webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
 		
-		liveGamingUsersRegistry.resetPlayersPairStateToWiatForNewGame(messageDto);
+		liveGamingUsersRegistry.setPlayersInPairWiatForNewGameState(messageDto);
 		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 
 	}
