@@ -9,19 +9,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.kuzdowicz.livegaming.chess.app.db.domain.ChessGame;
-import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.LiveChessGamesRepository;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.LiveChessGamesRegistry;
 
 public class LiveChessGamesRepositoryTest {
 
 	private ChessGame game;
 	private DateTime dateTimeNow;
-	private LiveChessGamesRepository liveChessGamesRepository;
+	private LiveChessGamesRegistry liveChessGamesRepository;
 
 	@Before
 	public void prepare() {
 		game = new ChessGame();
 		dateTimeNow = DateTime.now();
-		liveChessGamesRepository = new LiveChessGamesRepository();
+		liveChessGamesRepository = new LiveChessGamesRegistry();
 	}
 
 	@Test

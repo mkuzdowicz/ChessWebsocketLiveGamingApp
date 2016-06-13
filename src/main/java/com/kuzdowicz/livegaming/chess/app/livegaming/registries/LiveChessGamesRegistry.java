@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming.repositories;
+package com.kuzdowicz.livegaming.chess.app.livegaming.registries;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,7 +17,7 @@ import com.kuzdowicz.livegaming.chess.app.db.domain.ChessGame;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.ChessMoveDto;
 
 @Component
-public class LiveChessGamesRepository {
+public class LiveChessGamesRegistry {
 
 	private volatile static Map<String, ChessGame> chessGamesMap = new ConcurrentHashMap<>();
 

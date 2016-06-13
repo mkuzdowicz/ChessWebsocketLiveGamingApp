@@ -1,18 +1,21 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming.repositories;
+package com.kuzdowicz.livegaming.chess.app.livegaming;
 
 import com.kuzdowicz.livegaming.chess.app.db.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.db.repositories.UsersAccountsRepository;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.LiveChessGamesRegistry;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.LiveGamingUsersRegistry;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.WebSocketSessionsRegistry;
 
-public class RepositoriesAdapterForLiveGaming {
+public class LiveGamingContextAdapter {
 
-	private final WebSocketSessionsRepository webSocketSessionsRepository;
-	private final LiveGamingUsersRepository liveGamingUsersRepository;
-	private final LiveChessGamesRepository liveChessGamesRepository;
+	private final WebSocketSessionsRegistry webSocketSessionsRepository;
+	private final LiveGamingUsersRegistry liveGamingUsersRepository;
+	private final LiveChessGamesRegistry liveChessGamesRepository;
 	private final ChessGamesRepository chessGamesRepository;
 	private final UsersAccountsRepository usersRepository;
 
-	private RepositoriesAdapterForLiveGaming(WebSocketSessionsRepository webSocketSessionsRepository,
-			LiveGamingUsersRepository liveGamingUsersRepository, LiveChessGamesRepository liveChessGamesRepository,
+	private LiveGamingContextAdapter(WebSocketSessionsRegistry webSocketSessionsRepository,
+			LiveGamingUsersRegistry liveGamingUsersRepository, LiveChessGamesRegistry liveChessGamesRepository,
 			ChessGamesRepository chessGamesRepository, UsersAccountsRepository usersRepository) {
 		this.webSocketSessionsRepository = webSocketSessionsRepository;
 		this.liveGamingUsersRepository = liveGamingUsersRepository;
@@ -23,23 +26,23 @@ public class RepositoriesAdapterForLiveGaming {
 
 	public static class Builder {
 
-		private WebSocketSessionsRepository webSocketSessionsRepository;
-		private LiveGamingUsersRepository liveGamingUsersRepository;
-		private LiveChessGamesRepository liveChessGamesRepository;
+		private WebSocketSessionsRegistry webSocketSessionsRepository;
+		private LiveGamingUsersRegistry liveGamingUsersRepository;
+		private LiveChessGamesRegistry liveChessGamesRepository;
 		private ChessGamesRepository chessGamesRepository;
 		private UsersAccountsRepository usersRepository;
 
-		public Builder webSocketSessionsRepository(WebSocketSessionsRepository webSocketSessionsRepository) {
+		public Builder webSocketSessionsRepository(WebSocketSessionsRegistry webSocketSessionsRepository) {
 			this.webSocketSessionsRepository = webSocketSessionsRepository;
 			return this;
 		}
 
-		public Builder liveGamingUsersRepository(LiveGamingUsersRepository liveGamingUsersRepository) {
+		public Builder liveGamingUsersRepository(LiveGamingUsersRegistry liveGamingUsersRepository) {
 			this.liveGamingUsersRepository = liveGamingUsersRepository;
 			return this;
 		}
 
-		public Builder liveChessGamesRepository(LiveChessGamesRepository liveChessGamesRepository) {
+		public Builder liveChessGamesRepository(LiveChessGamesRegistry liveChessGamesRepository) {
 			this.liveChessGamesRepository = liveChessGamesRepository;
 			return this;
 		}
@@ -54,22 +57,22 @@ public class RepositoriesAdapterForLiveGaming {
 			return this;
 		}
 
-		public RepositoriesAdapterForLiveGaming build() {
-			return new RepositoriesAdapterForLiveGaming(webSocketSessionsRepository, liveGamingUsersRepository,
+		public LiveGamingContextAdapter build() {
+			return new LiveGamingContextAdapter(webSocketSessionsRepository, liveGamingUsersRepository,
 					liveChessGamesRepository, chessGamesRepository, usersRepository);
 		}
 
 	}
 
-	public WebSocketSessionsRepository getWebSocketSessionsRepository() {
+	public WebSocketSessionsRegistry getWebSocketSessionsRepository() {
 		return webSocketSessionsRepository;
 	}
 
-	public LiveGamingUsersRepository getLiveGamingUsersRepository() {
+	public LiveGamingUsersRegistry getLiveGamingUsersRepository() {
 		return liveGamingUsersRepository;
 	}
 
-	public LiveChessGamesRepository getLiveChessGamesRepository() {
+	public LiveChessGamesRegistry getLiveChessGamesRepository() {
 		return liveChessGamesRepository;
 	}
 

@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming.repositories;
+package com.kuzdowicz.livegaming.chess.app.livegaming.registries;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,16 +16,16 @@ import com.google.gson.Gson;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
 
 @Component
-public class WebSocketSessionsRepository {
+public class WebSocketSessionsRegistry {
 
-	private final static Logger logger = LoggerFactory.getLogger(WebSocketSessionsRepository.class);
+	private final static Logger logger = LoggerFactory.getLogger(WebSocketSessionsRegistry.class);
 
 	protected volatile static Map<String, WebSocketSession> sessionsMap = new ConcurrentHashMap<>();
 
 	private final Gson gson;
 
 	@Autowired
-	public WebSocketSessionsRepository(Gson gson) {
+	public WebSocketSessionsRegistry(Gson gson) {
 		this.gson = gson;
 	}
 
@@ -43,7 +43,7 @@ public class WebSocketSessionsRepository {
 		sessionsMap.keySet().forEach(username -> {
 			WebSocketSession userSession = sessionsMap.get(username);
 			try {
-				String jsonUsersList = gson.toJson(LiveGamingUsersRepository.gameUsersMap.values());
+				String jsonUsersList = gson.toJson(LiveGamingUsersRegistry.gameUsersMap.values());
 				TextMessage tm = new TextMessage(jsonUsersList.getBytes());
 				userSession.sendMessage(tm);
 			} catch (IOException e) {
@@ -55,7 +55,7 @@ public class WebSocketSessionsRepository {
 	public synchronized void sendToAllConnectedSessionsActualParticipantList() {
 		logger.debug("sendToAllConnectedSessionsActualParticipantList()");
 
-		String jsonUsersList = gson.toJson(LiveGamingUsersRepository.gameUsersMap.values());
+		String jsonUsersList = gson.toJson(LiveGamingUsersRegistry.gameUsersMap.values());
 		sessionsMap.keySet().forEach(username -> {
 			WebSocketSession userSession = sessionsMap.get(username);
 			if (userSession != null) {

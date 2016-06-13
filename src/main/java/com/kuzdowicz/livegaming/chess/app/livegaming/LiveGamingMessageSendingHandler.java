@@ -6,29 +6,28 @@ import org.springframework.stereotype.Service;
 import com.kuzdowicz.livegaming.chess.app.db.repositories.ChessGamesRepository;
 import com.kuzdowicz.livegaming.chess.app.db.repositories.UsersAccountsRepository;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
-import com.kuzdowicz.livegaming.chess.app.livegaming.comunication.strategys.GameMessageHandlerFacotry;
-import com.kuzdowicz.livegaming.chess.app.livegaming.comunication.strategys.GameMessagesHandler;
-import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.LiveChessGamesRepository;
-import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.LiveGamingUsersRepository;
-import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.RepositoriesAdapterForLiveGaming;
-import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.WebSocketSessionsRepository;
+import com.kuzdowicz.livegaming.chess.app.livegaming.comunication.strategies.GameMessageHandlerFacotry;
+import com.kuzdowicz.livegaming.chess.app.livegaming.comunication.strategies.GameMessagesHandler;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.LiveChessGamesRegistry;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.LiveGamingUsersRegistry;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.WebSocketSessionsRegistry;
 
 @Service
 public class LiveGamingMessageSendingHandler {
 
-	private final WebSocketSessionsRepository webSocketSessionsRepository;
-	private final LiveGamingUsersRepository liveGamingUsersRepository;
-	private final LiveChessGamesRepository liveChessGamesRepository;
+	private final WebSocketSessionsRegistry webSocketSessionsRegistry;
+	private final LiveGamingUsersRegistry liveGamingUsersRegistry;
+	private final LiveChessGamesRegistry liveChessGamesRegistry;
 	private final ChessGamesRepository chessGamesRepository;
 	private final UsersAccountsRepository usersRepository;
 
 	@Autowired
-	public LiveGamingMessageSendingHandler(WebSocketSessionsRepository webSocketSessionsRepository,
-			LiveGamingUsersRepository liveGamingUsersRepository, LiveChessGamesRepository liveChessGamesRepository,
+	public LiveGamingMessageSendingHandler(WebSocketSessionsRegistry webSocketSessionsRegistry,
+			LiveGamingUsersRegistry liveGamingUsersRegistry, LiveChessGamesRegistry liveChessGamesRegistry,
 			ChessGamesRepository chessGamesRepository, UsersAccountsRepository usersRepository) {
-		this.webSocketSessionsRepository = webSocketSessionsRepository;
-		this.liveGamingUsersRepository = liveGamingUsersRepository;
-		this.liveChessGamesRepository = liveChessGamesRepository;
+		this.webSocketSessionsRegistry = webSocketSessionsRegistry;
+		this.liveGamingUsersRegistry = liveGamingUsersRegistry;
+		this.liveChessGamesRegistry = liveChessGamesRegistry;
 		this.chessGamesRepository = chessGamesRepository;
 		this.usersRepository = usersRepository;
 	}
@@ -38,11 +37,11 @@ public class LiveGamingMessageSendingHandler {
 		GameMessageHandlerFacotry gameMessageHandlerFacotry = new GameMessageHandlerFacotry();
 		GameMessagesHandler messageHandler = gameMessageHandlerFacotry.createMessageHandler(messageObj.getType());
 
-		RepositoriesAdapterForLiveGaming repositoriesAdapter = //
-				new RepositoriesAdapterForLiveGaming.Builder() //
-						.webSocketSessionsRepository(webSocketSessionsRepository) //
-						.liveGamingUsersRepository(liveGamingUsersRepository) //
-						.liveChessGamesRepository(liveChessGamesRepository) //
+		LiveGamingContextAdapter repositoriesAdapter = //
+				new LiveGamingContextAdapter.Builder() //
+						.webSocketSessionsRepository(webSocketSessionsRegistry) //
+						.liveGamingUsersRepository(liveGamingUsersRegistry) //
+						.liveChessGamesRepository(liveChessGamesRegistry) //
 						.chessGamesRepository(chessGamesRepository) //
 						.usersRepository(usersRepository).build();
 

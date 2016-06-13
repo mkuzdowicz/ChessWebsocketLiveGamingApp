@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming.comunication.strategys;
+package com.kuzdowicz.livegaming.chess.app.livegaming.comunication.strategies;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -14,26 +14,26 @@ import com.kuzdowicz.livegaming.chess.app.constants.GameMessageType;
 import com.kuzdowicz.livegaming.chess.app.constants.GameUserCommunicationStatus;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
-import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.LiveGamingUsersRepository;
-import com.kuzdowicz.livegaming.chess.app.livegaming.repositories.WebSocketSessionsRepository;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.LiveGamingUsersRegistry;
+import com.kuzdowicz.livegaming.chess.app.livegaming.registries.WebSocketSessionsRegistry;
 
 @Component
 public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 	private final static Logger log = LoggerFactory.getLogger(LiveGamingWebSocketHandler.class);
 
-	private final WebSocketSessionsRepository webSocketSessionsRepository;
-	private final LiveGamingUsersRepository liveGamingUsersRepository;
-	private final LiveGamingMessageSendingHandler gameMessageProtocol;
+	private final WebSocketSessionsRegistry webSocketSessionsRegistry;
+	private final LiveGamingUsersRegistry liveGamingUsersRegistry;
+	private final LiveGamingMessageSendingHandler gameMessageHandler;
 	private final Gson gson;
 
 	@Autowired
-	public LiveGamingWebSocketHandler(WebSocketSessionsRepository webSocketSessionsRepository,
-			LiveGamingUsersRepository liveGamingUsersRepository, LiveGamingMessageSendingHandler gameMessageProtocol,
+	public LiveGamingWebSocketHandler(WebSocketSessionsRegistry webSocketSessionsRegistry,
+			LiveGamingUsersRegistry liveGamingUsersRegistry, LiveGamingMessageSendingHandler gameMessageHandler,
 			Gson gson) {
-		this.webSocketSessionsRepository = webSocketSessionsRepository;
-		this.liveGamingUsersRepository = liveGamingUsersRepository;
-		this.gameMessageProtocol = gameMessageProtocol;
+		this.webSocketSessionsRegistry = webSocketSessionsRegistry;
+		this.liveGamingUsersRegistry = liveGamingUsersRegistry;
+		this.gameMessageHandler = gameMessageHandler;
 		this.gson = gson;
 	}
 
@@ -43,14 +43,14 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 		String[] connUriSpliietdBySlash = connectionUriPath.split("/");
 		String sender = connUriSpliietdBySlash[connUriSpliietdBySlash.length - 1];
 
-		if (liveGamingUsersRepository.userListNotContainsUsername(sender)) {
+		if (liveGamingUsersRegistry.userListNotContainsUsername(sender)) {
 
 			LiveGamingUserDto gameUser = new LiveGamingUserDto(sender);
 			gameUser.setCommunicationStatus(GameUserCommunicationStatus.WAIT_FOR_NEW_GAME);
 
-			webSocketSessionsRepository.addSession(sender, session);
-			liveGamingUsersRepository.addWebsocketUser(gameUser);
-			webSocketSessionsRepository.sendToAllConnectedSessions(gameUser.getUsername());
+			webSocketSessionsRegistry.addSession(sender, session);
+			liveGamingUsersRegistry.addWebsocketUser(gameUser);
+			webSocketSessionsRegistry.sendToAllConnectedSessions(gameUser.getUsername());
 		}
 
 	}
@@ -58,7 +58,7 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		GameMessageDto gameMessage = gson.fromJson(message.getPayload(), GameMessageDto.class);
-		gameMessageProtocol.proccessMessage(gameMessage);
+		gameMessageHandler.proccessMessage(gameMessage);
 	}
 
 	@Override
@@ -66,12 +66,12 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 
 		String sender = session.getAttributes().get("username").toString();
 		synchronized (this) {
-			LiveGamingUserDto cloesingConnectionUser = liveGamingUsersRepository.getWebsocketUser(sender);
+			LiveGamingUserDto cloesingConnectionUser = liveGamingUsersRegistry.getWebsocketUser(sender);
 
 			if (cloesingConnectionUser.getPlayNowWithUser() != null
 					&& cloesingConnectionUser.getPlayNowWithUser() != "") {
 
-				LiveGamingUserDto cloesingConnectionUserGamePartner = liveGamingUsersRepository
+				LiveGamingUserDto cloesingConnectionUserGamePartner = liveGamingUsersRegistry
 						.getWebsocketUser(cloesingConnectionUser.getPlayNowWithUser());
 
 				cloesingConnectionUserGamePartner.setPlayNowWithUser(null);
@@ -80,14 +80,14 @@ public class LiveGamingWebSocketHandler extends TextWebSocketHandler {
 				GameMessageDto disconnectMsg = new GameMessageDto();
 				disconnectMsg.setType(GameMessageType.USER_DISCONNECT);
 
-				webSocketSessionsRepository.sendToSession(cloesingConnectionUserGamePartner.getUsername(), sender,
+				webSocketSessionsRegistry.sendToSession(cloesingConnectionUserGamePartner.getUsername(), sender,
 						gson.toJson(disconnectMsg));
 			}
 
-			liveGamingUsersRepository.removeWebsocketUser(sender);
-			webSocketSessionsRepository.removeSession(sender);
+			liveGamingUsersRegistry.removeWebsocketUser(sender);
+			webSocketSessionsRegistry.removeSession(sender);
 		}
-		webSocketSessionsRepository.sendToAllConnectedSessionsActualParticipantList();
+		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 	}
 
 	@Override

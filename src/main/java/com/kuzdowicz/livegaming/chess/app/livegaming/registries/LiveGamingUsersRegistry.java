@@ -1,4 +1,4 @@
-package com.kuzdowicz.livegaming.chess.app.livegaming.repositories;
+package com.kuzdowicz.livegaming.chess.app.livegaming.registries;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +11,7 @@ import com.kuzdowicz.livegaming.chess.app.dto.gaming.GameMessageDto;
 import com.kuzdowicz.livegaming.chess.app.dto.gaming.LiveGamingUserDto;
 
 @Component
-public class LiveGamingUsersRepository {
+public class LiveGamingUsersRegistry {
 
 	protected volatile static Map<String, LiveGamingUserDto> gameUsersMap = new ConcurrentHashMap<>();
 
