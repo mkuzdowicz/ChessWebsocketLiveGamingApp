@@ -16,6 +16,13 @@ web application for live chess gaming
 * mvn clean install 
 * mvn spring-boot:run
 
+## to enabling sending of registration mail
+* go to application.properties
+* in spring.mail.username
+* and spring.mail.password 
+* type your gmail address and password 
+* and turn of firewall in your antivirus
+
 
 
 

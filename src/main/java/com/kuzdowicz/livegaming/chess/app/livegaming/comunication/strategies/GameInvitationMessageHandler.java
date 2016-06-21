@@ -27,13 +27,6 @@ public class GameInvitationMessageHandler implements GameMessagesHandler {
 
 			liveGamingUsersRegistry.setPlayersPairInInvitationState(messageDto);
 
-			// LiveGamingUserDto sendToObj =
-			// liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendTo());
-			// messageDto.setSendToObj(sendToObj);
-			// LiveGamingUserDto sendFromObj =
-			// liveGamingUsersRegistry.getWebsocketUser(messageDto.getSendFrom());
-			// messageDto.setSendFromObj(sendFromObj);
-
 			webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
 			webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
 
