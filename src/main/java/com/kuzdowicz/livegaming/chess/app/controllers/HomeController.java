@@ -9,9 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 import com.kuzdowicz.livegaming.chess.app.db.domain.UserAccount;
@@ -30,27 +30,25 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView home(Principal principal) {
+	public String home(Model model, Principal principal) {
 
-		ModelAndView homePageModel = new ModelAndView("pages/public/home");
-		addBasicObjectsToModelAndView(homePageModel, principal);
-		return homePageModel;
+		addBasicObjectsToModelAndView(model, principal);
+		return "pages/public/home";
 	}
 
 	@RequestMapping(value = "/home/best-players", method = RequestMethod.GET)
-	public ModelAndView bestPlayersSite(Principal principal) {
+	public String bestPlayersSite(Model model, Principal principal) {
 
-		ModelAndView bestPlayers = new ModelAndView("pages/public/bestPlayers");
-		addBasicObjectsToModelAndView(bestPlayers, principal);
+		addBasicObjectsToModelAndView(model, principal);
 		Pageable pageable = new PageRequest(0, 10, new Sort(Sort.Direction.DESC, "numberOfWonChessGames"));
 		List<UserAccount> bestPlayingUsers = repository.findAllWhereNumberOfWonChessGamesGt0(pageable);
-		bestPlayers.addObject("bestPlayersJson", gson.toJson(bestPlayingUsers));
+		model.addAttribute("bestPlayersJson", gson.toJson(bestPlayingUsers));
 
-		return bestPlayers;
+		return "pages/public/bestPlayers";
 	}
 
-	private void addBasicObjectsToModelAndView(ModelAndView modelAndView, Principal principal) {
-		modelAndView.addObject("currentUserName",
+	private void addBasicObjectsToModelAndView(Model model, Principal principal) {
+		model.addAttribute("currentUserName",
 				Optional.ofNullable(principal).filter(p -> p != null).map(p -> p.getName()).orElse(""));
 	}
 
