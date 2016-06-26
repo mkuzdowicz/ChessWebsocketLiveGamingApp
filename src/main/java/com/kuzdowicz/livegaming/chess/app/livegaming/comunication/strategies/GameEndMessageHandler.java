@@ -17,8 +17,7 @@ import com.kuzdowicz.livegaming.chess.app.livegaming.registries.WebSocketSession
 public class GameEndMessageHandler implements GameMessagesHandler {
 
 	@Override
-	public synchronized void reactToMessages(GameMessageDto messageDto,
-			LiveGamingContextAdapter gamingCtxAdapter) {
+	public synchronized void reactToMessages(GameMessageDto messageDto, LiveGamingContextAdapter gamingCtxAdapter) {
 
 		String messageType = messageDto.getType();
 		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
@@ -27,6 +26,8 @@ public class GameEndMessageHandler implements GameMessagesHandler {
 		if (messageType.equals(GameMessageType.QUIT_GAME) || messageType.equals(GameMessageType.GAME_OVER)) {
 			saveStatisticsDataToDbIfQuitGameOrIfCheckMate(messageDto, gamingCtxAdapter);
 		}
+
+		webSocketSessionsRegistry.sendMessageToOneUser(messageDto);
 
 		liveGamingUsersRegistry.setPlayersInPairWiatForNewGameState(messageDto);
 		webSocketSessionsRegistry.sendToAllConnectedSessionsActualParticipantList();
@@ -38,7 +39,7 @@ public class GameEndMessageHandler implements GameMessagesHandler {
 
 		LiveGamingUsersRegistry liveGamingUsersRegistry = gamingCtxAdapter.getLiveGamingUsersRegistry();
 		LiveChessGamesRegistry liveChessGamesRegistry = gamingCtxAdapter.getLiveChessGamesRegistry();
-		
+
 		UsersAccountsRepository usersRepository = gamingCtxAdapter.getUsersRepository();
 		ChessGamesRepository chessGamesRepository = gamingCtxAdapter.getChessGamesRepository();
 
